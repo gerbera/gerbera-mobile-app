@@ -4,20 +4,25 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
+import useHostnameCheck from './hooks/useHostnameCheck';
 import Navigation from './navigation';
+import { InitialRoute } from './types';
 
 export default function App() {
-  const isLoadingComplete = useCachedResources();
+  const areResourcesLoaded = useCachedResources();
   const colorScheme = useColorScheme();
+  const {checkedHostname, hasHostname} = useHostnameCheck();
 
-  if (!isLoadingComplete) {
-    return null;
-  } else {
+  if (areResourcesLoaded && checkedHostname) {
+    const initialRoute = InitialRoute.noHostname;
+    // const initialRoute = hasHostname ? InitialRoute.hostname : InitialRoute.noHostname;
     return (
       <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
+        <Navigation colorScheme={colorScheme} initialRoute={initialRoute}/>
         <StatusBar />
       </SafeAreaProvider>
     );
+  } else {
+    return null;
   }
 }

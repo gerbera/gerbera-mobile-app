@@ -16,7 +16,7 @@ export default function DrawerNavigator() {
         name="Database"
         component={DatabaseNavigator}/>
       <Drawer.Screen
-        name="FileSystem"
+        name="File System"
         component={FileSystemNavigator}
       />
       <Drawer.Screen
@@ -33,7 +33,7 @@ function DatabaseNavigator() {
   return (
     <DatabaseStack.Navigator>
       <DatabaseStack.Screen
-        name="DatabaseScreen"
+        name="Database"
         component={DatabaseScreen}
       />
     </DatabaseStack.Navigator>
@@ -46,7 +46,7 @@ function FileSystemNavigator() {
   return (
     <FileSystemStack.Navigator>
       <FileSystemStack.Screen
-        name="FileSystemScreen"
+        name="File System"
         component={FileSystemScreen}
       />
     </FileSystemStack.Navigator>
@@ -59,7 +59,7 @@ function ClientsNavigator() {
   return (
     <ClientsStack.Navigator>
       <ClientsStack.Screen
-        name="ClientsScreen"
+        name="Clients"
         component={ClientsScreen}
       />
     </ClientsStack.Navigator>

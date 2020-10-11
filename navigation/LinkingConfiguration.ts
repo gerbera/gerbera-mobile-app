@@ -24,6 +24,7 @@ export default {
         },
       },
       NotFound: '*',
+      InputHostname: 'inputhostname'
     },
   },
 };
