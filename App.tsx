@@ -14,8 +14,8 @@ export default function App() {
   const {checkedHostname, hasHostname} = useHostnameCheck();
 
   if (areResourcesLoaded && checkedHostname) {
-    const initialRoute = InitialRoute.noHostname;
-    // const initialRoute = hasHostname ? InitialRoute.hostname : InitialRoute.noHostname;
+    // const initialRoute = InitialRoute.noHostname;
+    const initialRoute = hasHostname ? InitialRoute.hostname : InitialRoute.noHostname;
     return (
       <SafeAreaProvider>
         <Navigation colorScheme={colorScheme} initialRoute={initialRoute}/>

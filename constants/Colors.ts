@@ -11,7 +11,8 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
     orange: '#ff8206',
-    activityIndicator: '#24292e'
+    activityIndicator: '#24292e',
+    icon: '#6c757d'
   },
   dark: {
     text: '#fff',
@@ -21,6 +22,7 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
     orange: '#ff8206',
-    activityIndicator: '#fe8900'
+    activityIndicator: '#fe8900',
+    icon: '#ff8206'
   },
 };

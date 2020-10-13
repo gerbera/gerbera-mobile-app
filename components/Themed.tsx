@@ -5,7 +5,8 @@ import {
   Button as PaperButton,
   ActivityIndicator as PaperActivityIndicator,
   Title as PaperTitle,
-  Headline as PaperHeadline
+  Headline as PaperHeadline,
+  List as PaperList
 } from 'react-native-paper';
 import { Feather as DefaultFeather } from '@expo/vector-icons';
 
@@ -57,7 +58,7 @@ export type ViewProps = ThemeProps & DefaultView['props'];
 export type IconProps = ThemeProps & DefaultIconProps;
 export type TextInputProps = ThemeProps & React.ComponentProps<typeof PaperTextInput>;
 export type ButtonProps = ThemeProps & React.ComponentProps<typeof PaperButton>;
-export type ActivityIndicatorProps = ThemeProps & {delay: number} & React.ComponentProps<typeof PaperActivityIndicator>;
+export type ActivityIndicatorProps = ThemeProps & React.ComponentProps<typeof PaperActivityIndicator>;
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -101,6 +102,22 @@ export function Title(props: React.ComponentProps<typeof PaperTitle>) {
 export function Headline(props: React.ComponentProps<typeof PaperHeadline>) {
   const color = useThemeColor({}, 'text');
   return <PaperHeadline style={{ color }} {...props}/>;
+}
+
+export function ListItem(props: React.ComponentProps<typeof PaperList.Item>) {
+  const theme = useRnpTheme();
+  const color = useThemeColor({}, 'text');
+  return <PaperList.Item titleStyle={{ color }} theme={theme} {...props}/>;
+}
+
+export function ListIcon(props: React.ComponentProps<typeof PaperList.Icon>) {
+  const color = useThemeColor({}, 'icon');
+  return <PaperList.Icon color={color} {...props}/>;
+}
+
+export function ActivityIndicator(props: ActivityIndicatorProps) {
+  const color = useThemeColor({}, 'icon');
+  return <PaperActivityIndicator color={color} {...props}/>;
 }
 
 // Uses lots of inspo from here: https://humble.dev/creating-a-nice-loading-button-with-react-hooks

@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import main from '../styles/main';
 import JSONRequest from '../utils/JSONRequest';
 import { GetOptions } from '../constants/Options';
+import { GerberaClient, GetClientsResponse } from '../types';
 
 const wht = "rgba(255,255,255,0.8)";
 const blk = "rgba(0,0,0,0.8)";
@@ -34,9 +35,19 @@ function InfoRow(props: InfoRowProps) {
   );
 }
 
+// whent trying to index into an object with specified keys, with a string
+// of undetermined value, we need to verify that the string of undetermined value
+// is one of the keys to the object with specified keys. This function ensures that
+// and allows TypeScript (and us) to be sure that we won't do an invalid index into an object
+// and return null / undefined instead of a string / number
+function isValidKey(key: string, obj: GerberaClient): key is keyof (GerberaClient) {
+  return key in obj;
+}
+
 export default function ClientsScreen() {
   const navigation = useNavigation();
-  const [items, setItems] = useState([]);
+  const noItems: GerberaClient[] = [];
+  const [items, setItems] = useState(noItems);
   const [shouldRefresh, setShouldRefresh] = useState(true);
 
   useEffect(() => {
@@ -49,7 +60,7 @@ export default function ClientsScreen() {
     async function fetchData() {
       const hostname = await SecureStore.getItemAsync('hostname');
       const sid = await SecureStore.getItemAsync('sid');
-      const res = await JSONRequest(`${hostname}/content/interface?req_type=clients&sid=${sid}`, {
+      const res: GetClientsResponse = await JSONRequest(`${hostname}/content/interface?req_type=clients&sid=${sid}`, {
         "credentials": "include",
         ...GetOptions
       });
@@ -66,9 +77,13 @@ export default function ClientsScreen() {
         {items.length > 0
           && items.map((item, idx) => (
             <BorderedView key={idx} style={main.thinBorder}>
-              {Object.keys(item).map(k => (
-                <InfoRow key={`${idx}${k}`} elem={k} value={item[k]}/>
-              ))}
+              {Object.keys(item).map(k => {
+                if (isValidKey(k,item)) { // see function above for why we need this typeguard
+                  return (
+                    <InfoRow key={`${idx}${k}`} elem={k} value={item[k]}/>
+                  );  
+                }
+              })}
             </BorderedView>
           ))
         }

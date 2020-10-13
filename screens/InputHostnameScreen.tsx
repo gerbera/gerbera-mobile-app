@@ -58,7 +58,7 @@ export default function InputHostnameScreen({ navigation }: StackScreenProps<Roo
               setNotfound(false);
             setHostname(hostname);
           }}
-          style={main.input}
+          style={main.fullWidth}
         />
         <HelperText type='error' visible={notfound}>
           hostname is invalid
@@ -74,7 +74,7 @@ export default function InputHostnameScreen({ navigation }: StackScreenProps<Roo
           placeholder="admin"
           value={username}
           onChangeText={username => setUsername(username)}
-          style={main.input}
+          style={main.fullWidth}
         />
         <HelperText type='error' visible={false}>
           username is invalid
@@ -90,7 +90,7 @@ export default function InputHostnameScreen({ navigation }: StackScreenProps<Roo
           placeholder="hunter2"
           value={password}
           onChangeText={password => setPassword(password)}
-          style={main.input}
+          style={main.fullWidth}
         />
         <HelperText type='error' visible={false}>
           password is invalid

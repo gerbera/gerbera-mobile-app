@@ -31,10 +31,13 @@ export default StyleSheet.create({
   inputSpacer: {
     minHeight: 20
   },
-  input: {
+  fullWidth: {
     width: '100%'
   },
   marginBottom: {
     marginBottom: 35
+  },
+  marginTop: {
+    marginTop: 35
   }
 });
