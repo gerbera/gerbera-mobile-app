@@ -41,6 +41,11 @@ export type ClientsParamList = {
 
 export type onPressFunc = (event: GestureResponderEvent) => void
 
+export type SessionInfo = {
+  hostname: string,
+  sid: string
+}
+
 export interface GetSidSuccessResponse {
   sid_was_valid: boolean
   sid: string
@@ -101,22 +106,46 @@ export interface GetFilesSuccessResponse {
   success: boolean
 }
 
+export interface AddFileToDbSuccessResponse {
+  success: boolean
+}
+
+export interface InvalidSidResponse {
+  error: {
+    code: string,
+    text: 'invalid session id'
+  }
+  success: ('false')
+}
+
 export interface GetSidResponse extends JSONResponse {
   data?: GetSidSuccessResponse
   error?: boolean
 }
 
 export interface GetClientsResponse extends JSONResponse {
-  data?: GetClientsSuccessResponse
+  data?: GetClientsSuccessResponse | InvalidSidResponse
   error?: boolean
 }
 
+export function isInvalidSidResponse(
+  data: GetDirectoriesSuccessResponse| GetFilesSuccessResponse |
+  AddFileToDbSuccessResponse | InvalidSidResponse
+): data is InvalidSidResponse {
+  return (data as InvalidSidResponse).error !== undefined;
+}
+
 export interface GetDirectoriesResponse extends JSONResponse {
-  data?: GetDirectoriesSuccessResponse
+  data?: GetDirectoriesSuccessResponse | InvalidSidResponse
   error?: boolean
 }
 
 export interface GetFilesResponse extends JSONResponse {
-  data?: GetFilesSuccessResponse
+  data?: GetFilesSuccessResponse | InvalidSidResponse
+  error?: boolean
+}
+
+export interface AddFileToDbResponse extends JSONResponse {
+  data?: AddFileToDbSuccessResponse | InvalidSidResponse
   error?: boolean
 }

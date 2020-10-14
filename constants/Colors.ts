@@ -12,7 +12,8 @@ export default {
     tabIconSelected: tintColorLight,
     orange: '#ff8206',
     activityIndicator: '#24292e',
-    icon: '#6c757d'
+    icon: '#6c757d',
+    ripple: 'rgba(0, 0, 0, .32)'
   },
   dark: {
     text: '#fff',
@@ -23,6 +24,7 @@ export default {
     tabIconSelected: tintColorDark,
     orange: '#ff8206',
     activityIndicator: '#fe8900',
-    icon: '#ff8206'
+    icon: '#ff8206',
+    ripple: '#f6f4f6',
   },
 };

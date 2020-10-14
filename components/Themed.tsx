@@ -6,7 +6,9 @@ import {
   ActivityIndicator as PaperActivityIndicator,
   Title as PaperTitle,
   Headline as PaperHeadline,
-  List as PaperList
+  List as PaperList,
+  Snackbar as PaperSnackbar,
+  TouchableRipple as PaperTouchableRipple
 } from 'react-native-paper';
 import { Feather as DefaultFeather } from '@expo/vector-icons';
 
@@ -107,7 +109,12 @@ export function Headline(props: React.ComponentProps<typeof PaperHeadline>) {
 export function ListItem(props: React.ComponentProps<typeof PaperList.Item>) {
   const theme = useRnpTheme();
   const color = useThemeColor({}, 'text');
-  return <PaperList.Item titleStyle={{ color }} theme={theme} {...props}/>;
+  const { onPress, ...otherProps } = props;
+  return (
+    <TouchableRipple onPress={onPress}>
+      <PaperList.Item titleStyle={{ color }} theme={theme} {...otherProps}/>
+    </TouchableRipple>
+  );
 }
 
 export function ListIcon(props: React.ComponentProps<typeof PaperList.Icon>) {
@@ -118,6 +125,17 @@ export function ListIcon(props: React.ComponentProps<typeof PaperList.Icon>) {
 export function ActivityIndicator(props: ActivityIndicatorProps) {
   const color = useThemeColor({}, 'icon');
   return <PaperActivityIndicator color={color} {...props}/>;
+}
+
+export function Snackbar(props: React.ComponentProps<typeof PaperSnackbar>) {
+  const theme = useRnpTheme();
+  return <PaperSnackbar theme={theme} {...props}/>;
+}
+
+export function TouchableRipple(props: React.ComponentProps<typeof PaperTouchableRipple>) {
+  const theme = useRnpTheme();
+  const color = useThemeColor({}, 'ripple');
+  return <PaperTouchableRipple theme={theme} rippleColor={color} underlayColor={color} {...props}/>
 }
 
 // Uses lots of inspo from here: https://humble.dev/creating-a-nice-loading-button-with-react-hooks

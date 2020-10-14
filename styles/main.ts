@@ -34,6 +34,9 @@ export default StyleSheet.create({
   fullWidth: {
     width: '100%'
   },
+  fullHeight: {
+    height: '100%'
+  },
   marginBottom: {
     marginBottom: 35
   },
