@@ -1,4 +1,6 @@
-import { View, TextInput, Button, Headline } from '../components/Themed';
+import { View } from 'react-native';
+import { Headline, TextInput } from 'react-native-paper';
+import { Button } from '../components/Themed';
 import { GetOptions, SecureStoreOptions } from '../constants/Options';
 import main from '../styles/main';
 

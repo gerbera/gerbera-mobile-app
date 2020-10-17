@@ -9,3 +9,8 @@ export const GetOptions: RequestInit = {
   "method": "GET",
   "mode": "cors"
 };
+
+export const AuthedGetOptions: RequestInit = {
+  ...GetOptions,
+  "credentials": "include"
+};

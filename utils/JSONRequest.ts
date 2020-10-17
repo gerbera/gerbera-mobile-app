@@ -1,5 +1,3 @@
-import { FetchResult } from "react-native";
-
 export type JSONResponse = {
   data?: any,
   error?: boolean

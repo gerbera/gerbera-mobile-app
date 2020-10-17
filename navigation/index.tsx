@@ -9,6 +9,7 @@ import InputHostnameScreen from '../screens/InputHostnameScreen';
 import { InitialRoute, RootStackParamList } from '../types';
 import DrawerNavigator from './DrawerNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
+import { navTheme } from '../hooks/combineThemes';
 
 // TODO: here we need to use a hook to try and retrieve the asyncstorage entry
 // for the gerbera hostname. if we don't get it, show them a screen where
@@ -19,10 +20,13 @@ import LinkingConfiguration from './LinkingConfiguration';
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({ colorScheme, initialRoute }: { colorScheme: ColorSchemeName, initialRoute: InitialRoute }) {
+  const theme = navTheme(colorScheme);
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      // theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={theme}
+    >
       <RootNavigator initialRoute={initialRoute} />
     </NavigationContainer>
   );

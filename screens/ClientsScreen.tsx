@@ -1,19 +1,17 @@
 import * as React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import { Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
 import * as SecureStore from 'expo-secure-store';
 
-import { Text, View, BorderedView } from '../components/Themed';
+import { BorderedView } from '../components/Themed';
 import MenuIcon from '../components/MenuIcon';
 import { useEffect, useState } from 'react';
 import main from '../styles/main';
 import JSONRequest from '../utils/JSONRequest';
-import { GetOptions } from '../constants/Options';
-import { GerberaClient, GetClientsResponse } from '../types';
-
-const wht = "rgba(255,255,255,0.8)";
-const blk = "rgba(0,0,0,0.8)";
+import { AuthedGetOptions } from '../constants/Options';
+import { GerberaClient, GetClientsResponse, isInvalidSidResponse } from '../types';
 
 interface InfoRowProps {
   elem: string;
@@ -24,11 +22,11 @@ interface InfoRowProps {
 function InfoRow(props: InfoRowProps) {
   return (
     <BorderedView style={main.infoRow}>
-      <Text lightColor={blk} darkColor={wht}>
+      <Text>
         {props.elem}
       </Text>
       <View style={main.rowSpacer}></View>
-      <Text lightColor={blk} darkColor={wht}>
+      <Text>
         {props.value}
       </Text>
     </BorderedView>
@@ -60,11 +58,8 @@ export default function ClientsScreen() {
     async function fetchData() {
       const hostname = await SecureStore.getItemAsync('hostname');
       const sid = await SecureStore.getItemAsync('sid');
-      const res: GetClientsResponse = await JSONRequest(`${hostname}/content/interface?req_type=clients&sid=${sid}`, {
-        "credentials": "include",
-        ...GetOptions
-      });
-      if (res.data) {
+      const res: GetClientsResponse = await JSONRequest(`${hostname}/content/interface?req_type=clients&sid=${sid}`, AuthedGetOptions);
+      if (res.data && !isInvalidSidResponse(res.data)) {
         setItems(res.data.clients.client);
       }
     }

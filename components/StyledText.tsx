@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { Text, TextProps } from './Themed';
+import { Text } from 'react-native-paper';
 
-export function MonoText(props: TextProps) {
+export function MonoText(props: React.ComponentProps<typeof Text>) {
   return <Text {...props} style={[props.style, { fontFamily: 'space-mono' }]} />;
 }

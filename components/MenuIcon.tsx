@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Feather, TouchableRipple } from './Themed';
+import { Feather } from './Themed';
+import { TouchableRipple } from 'react-native-paper';
 
 import { onPressFunc } from '../types';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
