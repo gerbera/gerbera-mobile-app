@@ -123,7 +123,6 @@ export default function DatabaseScreen() {
                         left={() => <ListIcon icon={getIconForFileType(i.title)}/>}
                         right={() => 
                           <Menu
-                            style={{alignSelf: 'flex-end', backgroundColor: '#e5e5e5'}}
                             visible={menuVisible == i.id}
                             onDismiss={() => setMenuVisible(-1)}
                             anchor={

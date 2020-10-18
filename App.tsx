@@ -16,7 +16,7 @@ export default function App() {
   const theme = combineThemes(colorScheme);
   const {checkedHostname, hasHostname} = useHostnameCheck();
 
-  if (areResourcesLoaded && checkedHostname) {
+  if (areResourcesLoaded) {
     // const initialRoute = InitialRoute.noHostname;
     const initialRoute = hasHostname ? InitialRoute.hostname : InitialRoute.noHostname;
     return (
