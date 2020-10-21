@@ -153,6 +153,24 @@ export interface GetItemsSuccessResponse {
   success: boolean
 }
 
+// many of these numbers (except interval) are boolean bits (0|1)
+export interface GetAutoscanSuccessResponse {
+  autoscan: {
+    from_fs: number
+    object_id: string
+    scan_mode: string
+    recursive: number
+    hidden: number
+    interval: number,
+    persistent: number
+  }
+  success: boolean
+}
+
+export interface EditAutoScanSuccessResponse {
+  success: boolean
+}
+
 export interface InvalidSidResponse {
   error: {
     code: string,
@@ -200,5 +218,15 @@ export interface GetContainersResponse extends JSONResponse {
 
 export interface GetItemsResponse extends JSONResponse {
   data?: GetItemsSuccessResponse | InvalidSidResponse
+  error?: boolean
+}
+
+export interface GetAutoscanResponse extends JSONResponse {
+  data?: GetAutoscanSuccessResponse | InvalidSidResponse
+  error?: boolean
+}
+
+export interface EditAutoscanResponse extends JSONResponse {
+  data?: EditAutoScanSuccessResponse | InvalidSidResponse
   error?: boolean
 }
