@@ -174,13 +174,53 @@ export interface GetAutoscanSuccessResponse {
     scan_mode: string
     recursive: number
     hidden: number
-    interval: number,
+    interval: number
     persistent: number
   }
   success: boolean
 }
 
 export interface EditAutoScanSuccessResponse {
+  success: boolean
+}
+
+export interface Property {
+  value: string
+  editable: boolean
+}
+
+// horrible, but some of the values returned in the JSON response
+// have leading spaces...
+export interface ResourceData {
+  resname: '----RESOURCE----' | 'handlerType' | ' bitrate' | " duration" |
+    " nrAudioChannels" | " protocolInfo" | " resolution" | " sampleFrequency" |
+    " size" | "-4cc"
+  resvalue: string
+  editable: boolean
+}
+
+export interface GetItemPropertiesSuccessResponse {
+  item: {
+    object_id: number
+    title: Property
+    class: Property
+    obj_type: string
+    description: Property
+    location: Property
+    "mime-type": Property
+    metadata: {
+      metadata: object[]
+    }
+    auxdata: {
+      auxdata: object[]
+    }
+    resources: {
+      resources: ResourceData[]
+    }
+    update_ids: {
+      pending: boolean
+    }
+  }
   success: boolean
 }
 
@@ -241,5 +281,10 @@ export interface GetAutoscanResponse extends JSONResponse {
 
 export interface EditAutoscanResponse extends JSONResponse {
   data?: EditAutoScanSuccessResponse | InvalidSidResponse
+  error?: boolean
+}
+
+export interface GetItemPropertiesResponse extends JSONResponse {
+  data?: GetItemPropertiesSuccessResponse | InvalidSidResponse
   error?: boolean
 }

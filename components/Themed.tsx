@@ -4,7 +4,8 @@ import {
   Button as PaperButton,
   ActivityIndicator as PaperActivityIndicator,
   List as PaperList,
-  TouchableRipple
+  TouchableRipple,
+  Paragraph as PaperParagraph
 } from 'react-native-paper';
 import { Feather as DefaultFeather } from '@expo/vector-icons';
 
@@ -64,6 +65,16 @@ export function ListIcon(props: React.ComponentProps<typeof PaperList.Icon>) {
 export function ActivityIndicator(props: ActivityIndicatorProps) {
   const color = useThemeColor('icon');
   return <PaperActivityIndicator color={color} {...props}/>;
+}
+
+export function Paragraph(props: React.ComponentProps<typeof PaperParagraph>) {
+  const color = useThemeColor('accenttext');
+  const {style, children, ...otherProps} = props;
+  return (
+    <PaperParagraph style={[style, {color}]} {...otherProps}>
+      {children}
+    </PaperParagraph>
+  );
 }
 
 // Uses lots of inspo from here: https://humble.dev/creating-a-nice-loading-button-with-react-hooks

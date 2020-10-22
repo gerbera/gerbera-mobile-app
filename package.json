@@ -30,6 +30,7 @@
     "expo-secure-store": "~9.2.0",
     "expo-splash-screen": "~0.6.2",
     "expo-status-bar": "~1.0.2",
+    "filesize": "^6.1.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.3.tar.gz",

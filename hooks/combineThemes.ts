@@ -12,6 +12,7 @@ import {
 declare global {
   namespace ReactNativePaper {
     interface ThemeColors {
+      accenttext: string
       icon: string
     }
   }
@@ -25,7 +26,8 @@ export function combineThemes(themeType: ColorSchemeName): ReactNativePaper.Them
     colors: {
       ...NavigationDefaultTheme.colors,
       ...PaperDefaultTheme.colors,
-      icon: '#FF7500'
+      icon: '#FF7500',
+      accenttext: '#2c2d30'
     },
   };
   const CombinedDarkTheme: ReactNativePaper.Theme = {
@@ -39,6 +41,7 @@ export function combineThemes(themeType: ColorSchemeName): ReactNativePaper.Them
       accent: '#FF4D00',
       surface: '#2F2F2F',
       text: '#FAFAFA',
+      accenttext: '#babec6',
       placeholder: '#E5E5E5',
       icon: '#FF7500'
     },

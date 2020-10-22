@@ -6,13 +6,14 @@ import * as FileSystem from 'expo-file-system';
 import * as Notifications from 'expo-notifications';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
+import Filesize from 'filesize';
 
-import { ActivityIndicator, ListIcon, ListItem } from '../components/Themed';
-import { TouchableRipple } from 'react-native-paper';
+import { ActivityIndicator, ListIcon, Paragraph, ListItem } from '../components/Themed';
+import { Button, Dialog, Subheading, TouchableRipple } from 'react-native-paper';
 import MenuIcon from '../components/MenuIcon';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import main from '../styles/main';
-import { GerberaContainer, GerberaItem, GetContainersResponse, GetItemsResponse, isInvalidSidResponse, ScheduledNotifParams, SessionInfo } from '../types';
+import { GerberaContainer, GerberaItem, GetContainersResponse, GetItemPropertiesResponse, GetItemsResponse, isInvalidSidResponse, ResourceData, ScheduledNotifParams, SessionInfo } from '../types';
 import sessionEffect from '../auth/sessionEffect';
 import JSONRequest from '../utils/JSONRequest';
 import { AuthedGetOptions } from '../constants/Options';
@@ -27,23 +28,43 @@ import Ids from '../constants/Ids';
 
 export default function DatabaseScreen() {
   const navigation = useNavigation();
+ 
+  // auth state vars
   const emptySession: SessionInfo = {hostname: '', sid: ''};
   const [{hostname, sid}, setSession] = useState(emptySession);
+  const notAuthed: () => boolean = () => {
+    return hostname == emptySession.hostname && sid == emptySession.sid;
+  };
+
+  // container (directory) state vars
   const emptyParentIdStack: number[] = [];
   const [parentIdStack, setParentIdStack] = useState(emptyParentIdStack);
   const [parentId, setParentId] = useState(0);
   const noContainers: GerberaContainer[] = [];
   const [containers, setContainers] = useState(noContainers);
+
+  /// item (file) state vars
   const noItems: GerberaItem[] = [];
   const [items, setItems] = useState(noItems);
+
   const [loading, setLoading] = useState(false);
+
+  // menu actions state vars
   const dlPrefix = 'gerbdl_';
   const dlErrorPrefix = 'gerberr_';
   const dlFinishedPrefix = 'gerbfn_';
   const [menuVisible, setMenuVisible] = useState(-1);
-  const notAuthed: () => boolean = () => {
-    return hostname == emptySession.hostname && sid == emptySession.sid;
-  };
+
+  // show item properties state vars
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [chosenItemId, setChosenItemId] = useState(0);
+  const [chosenItemTitle, setChosenItemTitle] = useState('');
+  const [chosenItemFullPath, setChosenItemFullPath] = useState('');
+  const [chosenItemMimeType, setChosenItemMimeType] = useState('');
+  const [chosenItemBitRate, setChosenItemBitRate] = useState('');
+  const [chosenItemDuration, setChosenItemDuration] = useState('');
+  const [chosenItemResolution, setChosenItemResolution] = useState('');
+  const [chosenItemSize, setChosenItemSize] = useState('');
 
   // adds the hamburger menu icon to the header
   useEffect(() => {
@@ -178,6 +199,31 @@ export default function DatabaseScreen() {
     await Notifications.scheduleNotificationAsync(scheduleNotifFinishedParams);
   }
 
+  const pickResValue = (resources: ResourceData[], name: string): string => {
+    return resources.filter(x => x.resname == name).map(x => x.resvalue).join('');
+  };
+
+  // load the properties of the chosen item
+  useEffect(() => {
+    async function getItemProperties() {
+      const res: GetItemPropertiesResponse = await JSONRequest(`${hostname}/content/interface?req_type=edit_load&sid=${sid}&object_id=${chosenItemId}`, AuthedGetOptions);
+      if (res.data && !isInvalidSidResponse(res.data)) {
+        setChosenItemFullPath(res.data.item.location.value);
+        setChosenItemMimeType(res.data.item["mime-type"].value);
+        const resources = res.data.item.resources.resources;
+        setChosenItemBitRate(pickResValue(resources, ' bitrate'));
+        setChosenItemDuration(pickResValue(resources, ' duration'));
+        setChosenItemResolution(pickResValue(resources, ' resolution'));
+        // below converts the bytes value (as string) to a human readable size string
+        // 226761083 => 216.26 MB
+        setChosenItemSize(Filesize(parseInt(pickResValue(resources, ' size'))));
+      }
+    }
+
+    if (notAuthed()) return;
+    getItemProperties();
+  }, [chosenItemId]);
+
   return (
     <View>
       <ScrollView>
@@ -238,7 +284,13 @@ export default function DatabaseScreen() {
                               </TouchableRipple>
                             }
                           >
-                            <Menu.Item title='Properties'/>
+                            <Menu.Item title='Properties' onPress={() => {
+                                setMenuVisible(-1);
+                                setDialogVisible(true);
+                                setChosenItemId(i.id);
+                                setChosenItemTitle(i.title);
+                              }}
+                            />
                             <Menu.Item title='Download' onPress={async () => await downloadFile(i.id.toString(), i.title)}/>
                             <Menu.Item title='Edit'/>
                             <Menu.Item title='Delete'/>
@@ -252,6 +304,26 @@ export default function DatabaseScreen() {
             </View>
         }
       </ScrollView>
+      <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+        <Dialog.Title>{chosenItemTitle}</Dialog.Title>
+        <Dialog.Content>
+          <Subheading>File Path</Subheading>
+          <Paragraph>{chosenItemFullPath}</Paragraph>
+          <Subheading>Mime-Type</Subheading>
+          <Paragraph>{chosenItemMimeType}</Paragraph>
+          <Subheading>Bit Rate</Subheading>
+          <Paragraph>{chosenItemBitRate}</Paragraph>
+          <Subheading>Duration</Subheading>
+          <Paragraph>{chosenItemDuration}</Paragraph>
+          <Subheading>Resolution</Subheading>
+          <Paragraph>{chosenItemResolution}</Paragraph>
+          <Subheading>Size</Subheading>
+          <Paragraph>{chosenItemSize}</Paragraph>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={() => setDialogVisible(false)}>Done</Button>
+        </Dialog.Actions>
+      </Dialog>
     </View>
   )
 };
