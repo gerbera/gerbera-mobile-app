@@ -2,14 +2,19 @@ import { View } from 'react-native';
 import { Headline, TextInput } from 'react-native-paper';
 import { Button } from '../components/Themed';
 import { GetOptions, SecureStoreOptions } from '../constants/Options';
+import Ids from '../constants/Ids';
 import main from '../styles/main';
 
 import { StackScreenProps } from "@react-navigation/stack";
 import { GetSidResponse, RootStackParamList } from "../types";
 import React, { useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import * as Notifications from 'expo-notifications';
 import JSONRequest from '../utils/JSONRequest';
 import { HelperText } from 'react-native-paper';
+import { AndroidImportance, AndroidNotificationVisibility, NotificationChannel, NotificationChannelInput } from 'expo-notifications';
+import useColorScheme from '../hooks/useColorScheme';
+import { combineThemes } from '../hooks/combineThemes';
 
 export default function InputHostnameScreen({ navigation }: StackScreenProps<RootStackParamList, 'InputHostname'>) {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,9 +22,31 @@ export default function InputHostnameScreen({ navigation }: StackScreenProps<Roo
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [notfound, setNotfound] = useState(false);
+  const colorScheme = useColorScheme();
+  const theme = combineThemes(colorScheme);
+
+  async function setNotificationChannel() {
+    const loadingChannel: NotificationChannel | null = await Notifications.getNotificationChannelAsync(Ids.loadingChannelId);
+
+    // if we didn't find a notification channel set how we like it, then we create one
+    if (loadingChannel == null) {
+      const channelOptions: NotificationChannelInput = {
+        name: Ids.loadingChannelId,
+        importance: AndroidImportance.HIGH,
+        lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
+        sound: 'default',
+        vibrationPattern: [250],
+        lightColor: theme.colors.primary,
+        enableVibrate: true
+      };
+      await Notifications.setNotificationChannelAsync(Ids.loadingChannelId, channelOptions);
+    }
+  }
 
   async function submitForm() {
     setIsLoading(true);
+
+    await setNotificationChannel();
 
     const res: GetSidResponse = await JSONRequest(`${hostname}/content/interface?req_type=auth&action=get_sid`, GetOptions);
     

@@ -1,3 +1,4 @@
+import { AndroidNotificationPriority, ChannelAwareTriggerInput, NotificationContentInput, NotificationRequestInput } from "expo-notifications";
 import { GestureResponderEvent } from "react-native";
 import { JSONResponse } from "./utils/JSONRequest";
 
@@ -40,6 +41,18 @@ export type ClientsParamList = {
 }
 
 export type onPressFunc = (event: GestureResponderEvent) => void
+
+export interface ScheduledNotifParams extends NotificationRequestInput {
+  identifier: string,
+  content: {
+    title: string,
+    body: string,
+    vibrate: number[],
+    priority: AndroidNotificationPriority,
+    sticky: boolean
+  },
+  trigger: ChannelAwareTriggerInput
+};
 
 export type SessionInfo = {
   hostname: string,
