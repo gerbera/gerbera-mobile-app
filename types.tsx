@@ -224,6 +224,10 @@ export interface GetItemPropertiesSuccessResponse {
   success: boolean
 }
 
+export interface EditItemPropertiesSuccessResponse {
+  success: boolean
+}
+
 export interface InvalidSidResponse {
   error: {
     code: string,
@@ -286,5 +290,10 @@ export interface EditAutoscanResponse extends JSONResponse {
 
 export interface GetItemPropertiesResponse extends JSONResponse {
   data?: GetItemPropertiesSuccessResponse | InvalidSidResponse
+  error?: boolean
+}
+
+export interface EditItemPropertiesResponse extends JSONResponse {
+  data?: EditItemPropertiesSuccessResponse | InvalidSidResponse
   error?: boolean
 }

@@ -32,8 +32,8 @@ export default function FileSystemScreen() {
   const noFiles: GerberaFile[] = [];
   const [files, setFiles] = useState(noFiles);
   const [loading, setLoading] = useState(false);
-  const [snackBarVisible, setSnackBarVisible] = useState(false);
-  const snackBarDuration = 4000;
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const snackbarDuration = 4000;
   const [fileToAddId, setFileToAddId] = useState('0');
   const [fabOpen, setFabOpen] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -105,13 +105,13 @@ export default function FileSystemScreen() {
       if (res.data && !isInvalidSidResponse(res.data)) {
         
         // show the snackbar
-        setSnackBarVisible(true);
+        setSnackbarVisible(true);
         setFileToAddId('0'); // unset the file to add (avoid duplicate additions)
         
         // unset the snackbar's visibility (prevent it showing again if app refreshes)
         const timeout = setTimeout(() => {
-          setSnackBarVisible(false);
-        }, snackBarDuration);
+          setSnackbarVisible(false);
+        }, snackbarDuration);
         return () => {
           clearTimeout(timeout);
         };
@@ -149,7 +149,7 @@ export default function FileSystemScreen() {
   }
 
   return (
-    <View style={{height: '100%'}}>
+    <View style={main.fullHeight}>
       <ScrollView>
         { loading
           ? <ActivityIndicator style={main.marginTop}/>
@@ -214,9 +214,9 @@ export default function FileSystemScreen() {
 
       {/* snackbar which shows success when a file is added to the database */}
       <Snackbar
-        visible={snackBarVisible}
-        onDismiss={() => setSnackBarVisible(false)}
-        duration={snackBarDuration}
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={snackbarDuration}
       >
         Added file to the database
       </Snackbar>

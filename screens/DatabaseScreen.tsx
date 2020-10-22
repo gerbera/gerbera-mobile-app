@@ -9,11 +9,11 @@ import * as Permissions from 'expo-permissions';
 import Filesize from 'filesize';
 
 import { ActivityIndicator, ListIcon, Paragraph, ListItem } from '../components/Themed';
-import { Button, Dialog, Subheading, TouchableRipple } from 'react-native-paper';
+import { Button, Dialog, Snackbar, Subheading, TextInput, TouchableRipple } from 'react-native-paper';
 import MenuIcon from '../components/MenuIcon';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import main from '../styles/main';
-import { GerberaContainer, GerberaItem, GetContainersResponse, GetItemPropertiesResponse, GetItemsResponse, isInvalidSidResponse, ResourceData, ScheduledNotifParams, SessionInfo } from '../types';
+import { EditItemPropertiesResponse, GerberaContainer, GerberaItem, GetContainersResponse, GetItemPropertiesResponse, GetItemsResponse, isInvalidSidResponse, ResourceData, ScheduledNotifParams, SessionInfo } from '../types';
 import sessionEffect from '../auth/sessionEffect';
 import JSONRequest from '../utils/JSONRequest';
 import { AuthedGetOptions } from '../constants/Options';
@@ -56,7 +56,8 @@ export default function DatabaseScreen() {
   const [menuVisible, setMenuVisible] = useState(-1);
 
   // show item properties state vars
-  const [dialogVisible, setDialogVisible] = useState(false);
+  const [propertiesDialogVisible, setPropertiesDialogVisible] = useState(false);
+  const [editDialogVisible, setEditDialogVisible] = useState(false);
   const [chosenItemId, setChosenItemId] = useState(0);
   const [chosenItemTitle, setChosenItemTitle] = useState('');
   const [chosenItemFullPath, setChosenItemFullPath] = useState('');
@@ -64,7 +65,13 @@ export default function DatabaseScreen() {
   const [chosenItemBitRate, setChosenItemBitRate] = useState('');
   const [chosenItemDuration, setChosenItemDuration] = useState('');
   const [chosenItemResolution, setChosenItemResolution] = useState('');
+  const [chosenItemDescription, setChosenItemDescription] = useState('');
   const [chosenItemSize, setChosenItemSize] = useState('');
+
+  // snackbar state vars
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackSuccess, setSnackSuccess] = useState(true);
+  const snackbarDuration = 4000;
 
   // adds the hamburger menu icon to the header
   useEffect(() => {
@@ -210,6 +217,7 @@ export default function DatabaseScreen() {
       if (res.data && !isInvalidSidResponse(res.data)) {
         setChosenItemFullPath(res.data.item.location.value);
         setChosenItemMimeType(res.data.item["mime-type"].value);
+        setChosenItemDescription(res.data.item.description.value);
         const resources = res.data.item.resources.resources;
         setChosenItemBitRate(pickResValue(resources, ' bitrate'));
         setChosenItemDuration(pickResValue(resources, ' duration'));
@@ -224,8 +232,26 @@ export default function DatabaseScreen() {
     getItemProperties();
   }, [chosenItemId]);
 
+  async function editItemProperties() {
+    const res: EditItemPropertiesResponse = await JSONRequest(`${hostname}/content/interface?req_type=edit_save&sid=${sid}&object_id=${chosenItemId}&title=${encodeURIComponent(chosenItemTitle)}&description=${encodeURIComponent(chosenItemDescription)}&mime-type=${chosenItemMimeType}`, AuthedGetOptions);
+    if (res.data && !isInvalidSidResponse(res.data)) {
+      setSnackSuccess(true);
+    } else {
+      setSnackSuccess(false);
+    }
+    setSnackbarVisible(true);
+  }
+
+  // opens the dialog specified in second arg with info from item (first arg) from an action menu
+  const openDialog = (i: GerberaItem, setDialogVisible: (value: React.SetStateAction<boolean>) => void): void => {
+    setMenuVisible(-1);
+    setDialogVisible(true);
+    setChosenItemId(i.id);
+    setChosenItemTitle(i.title);
+  };
+
   return (
-    <View>
+    <View style={main.fullHeight}>
       <ScrollView>
         { loading
           ? <ActivityIndicator style={main.marginTop}/>
@@ -284,15 +310,10 @@ export default function DatabaseScreen() {
                               </TouchableRipple>
                             }
                           >
-                            <Menu.Item title='Properties' onPress={() => {
-                                setMenuVisible(-1);
-                                setDialogVisible(true);
-                                setChosenItemId(i.id);
-                                setChosenItemTitle(i.title);
-                              }}
-                            />
+                            <Menu.Item title='Properties' onPress={() => openDialog(i, setPropertiesDialogVisible)}/>
                             <Menu.Item title='Download' onPress={async () => await downloadFile(i.id.toString(), i.title)}/>
-                            <Menu.Item title='Edit'/>
+                            <Menu.Item title='Edit' onPress={() => openDialog(i, setEditDialogVisible)}
+                            />
                             <Menu.Item title='Delete'/>
                           </Menu>
                         }
@@ -304,7 +325,9 @@ export default function DatabaseScreen() {
             </View>
         }
       </ScrollView>
-      <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+
+      {/* properties dialog */}
+      <Dialog visible={propertiesDialogVisible} onDismiss={() => setPropertiesDialogVisible(false)}>
         <Dialog.Title>{chosenItemTitle}</Dialog.Title>
         <Dialog.Content>
           <Subheading>File Path</Subheading>
@@ -321,9 +344,55 @@ export default function DatabaseScreen() {
           <Paragraph>{chosenItemSize}</Paragraph>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={() => setDialogVisible(false)}>Done</Button>
+          <Button onPress={() => setPropertiesDialogVisible(false)}>Done</Button>
         </Dialog.Actions>
       </Dialog>
+
+      {/* edit item properties dialog */}
+      <Dialog visible={editDialogVisible} onDismiss={() => setEditDialogVisible(false)}>
+        <Dialog.Title>{`Edit Item`}</Dialog.Title>
+        <Dialog.Content>
+          <TextInput
+            mode='outlined'
+            label='Title'
+            placeholder={chosenItemTitle}
+            value={chosenItemTitle}
+            onChangeText={title => setChosenItemTitle(title)}
+            style={main.fullWidth}
+          />
+          <TextInput
+            mode='outlined'
+            label='Description'
+            placeholder={chosenItemDescription}
+            value={chosenItemDescription}
+            onChangeText={description => setChosenItemDescription(description)}
+            style={main.fullWidth}
+          />
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button 
+            onPress={async () => {
+              await editItemProperties();
+              setEditDialogVisible(false);
+            }}
+          >
+            Save
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+
+      {/* snackbar which shows success / failure after any post to db */}
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={snackbarDuration}
+      >
+        {
+          snackSuccess
+            ? 'Successfully completed operation'
+            : 'Failed to complete operation'
+        }
+      </Snackbar>
     </View>
   )
 };
