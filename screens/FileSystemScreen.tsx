@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
 
 import { ActivityIndicator, Button as LoadingButton, ListIcon, ListItem } from '../components/Themed';
@@ -20,6 +20,7 @@ import FolderItem from '../components/FolderItem';
 
 export default function FileSystemScreen() {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const emptySession: SessionInfo = {hostname: '', sid: ''};
   const [{hostname, sid}, setSession] = useState(emptySession);
   const emptyParentDirStack: GerberaDirectory[] = [];
@@ -223,7 +224,7 @@ export default function FileSystemScreen() {
       {/* floating action button */}
       <Portal>
         <FAB.Group
-          visible={!loading && !dialogVisible}
+          visible={!loading && !dialogVisible && isFocused}
           open={fabOpen}
           icon={fabOpen ? 'window-close' : 'plus'}
           onStateChange={({ open }) => setFabOpen(open)}

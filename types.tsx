@@ -228,6 +228,10 @@ export interface EditItemPropertiesSuccessResponse {
   success: boolean
 }
 
+export interface DeleteItemSuccessResponse {
+  success: boolean
+}
+
 export interface InvalidSidResponse {
   error: {
     code: string,
@@ -237,7 +241,7 @@ export interface InvalidSidResponse {
 }
 
 export function isInvalidSidResponse(
-  data: GetDirectoriesSuccessResponse| GetFilesSuccessResponse |
+  data: GetDirectoriesSuccessResponse | GetFilesSuccessResponse |
   AddFileToDbSuccessResponse | InvalidSidResponse
 ): data is InvalidSidResponse {
   return (data as InvalidSidResponse).error !== undefined;
@@ -295,5 +299,10 @@ export interface GetItemPropertiesResponse extends JSONResponse {
 
 export interface EditItemPropertiesResponse extends JSONResponse {
   data?: EditItemPropertiesSuccessResponse | InvalidSidResponse
+  error?: boolean
+}
+
+export interface DeleteItemResponse extends JSONResponse {
+  data?: DeleteItemSuccessResponse | InvalidSidResponse
   error?: boolean
 }

@@ -13,7 +13,7 @@ import { Button, Dialog, Snackbar, Subheading, TextInput, TouchableRipple } from
 import MenuIcon from '../components/MenuIcon';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import main from '../styles/main';
-import { EditItemPropertiesResponse, GerberaContainer, GerberaItem, GetContainersResponse, GetItemPropertiesResponse, GetItemsResponse, isInvalidSidResponse, ResourceData, ScheduledNotifParams, SessionInfo } from '../types';
+import { DeleteItemResponse, EditItemPropertiesResponse, GerberaContainer, GerberaItem, GetContainersResponse, GetItemPropertiesResponse, GetItemsResponse, isInvalidSidResponse, ResourceData, ScheduledNotifParams, SessionInfo } from '../types';
 import sessionEffect from '../auth/sessionEffect';
 import JSONRequest from '../utils/JSONRequest';
 import { AuthedGetOptions } from '../constants/Options';
@@ -25,6 +25,7 @@ import FolderItem from '../components/FolderItem';
 import getIconForFileType from '../constants/FileExtIcons';
 import { AndroidNotificationPriority } from 'expo-notifications';
 import Ids from '../constants/Ids';
+import { DbActionMenu } from '../components/ActionMenu';
 
 export default function DatabaseScreen() {
   const navigation = useNavigation();
@@ -60,6 +61,7 @@ export default function DatabaseScreen() {
   const [editDialogVisible, setEditDialogVisible] = useState(false);
   const [chosenItemId, setChosenItemId] = useState(0);
   const [chosenItemTitle, setChosenItemTitle] = useState('');
+  const [chosenIsContainer, setChosenIsContainer] = useState(false);
   const [chosenItemFullPath, setChosenItemFullPath] = useState('');
   const [chosenItemMimeType, setChosenItemMimeType] = useState('');
   const [chosenItemBitRate, setChosenItemBitRate] = useState('');
@@ -97,18 +99,17 @@ export default function DatabaseScreen() {
   }, [containers]);
 
   // ls the container we are currently in (container is db version of dir)
+  async function getContainerContents(): Promise<void> {
+    const containersRes: GetContainersResponse = await JSONRequest(`${hostname}/content/interface?req_type=containers&sid=${sid}&parent_id=${parentId}`, AuthedGetOptions);
+    const itemsRes: GetItemsResponse = await JSONRequest(`${hostname}/content/interface?req_type=items&sid=${sid}&parent_id=${parentId}`, AuthedGetOptions);
+    if (containersRes.data && !isInvalidSidResponse(containersRes.data)) {
+      setContainers(containersRes.data.containers.container);
+    } else await refreshSesh();
+    if (itemsRes.data && !isInvalidSidResponse(itemsRes.data)) {
+      setItems(itemsRes.data.items.item);
+    } else await refreshSesh();
+  }
   useEffect(() => {
-    async function getContainerContents() {
-      const containersRes: GetContainersResponse = await JSONRequest(`${hostname}/content/interface?req_type=containers&sid=${sid}&parent_id=${parentId}`, AuthedGetOptions);
-      const itemsRes: GetItemsResponse = await JSONRequest(`${hostname}/content/interface?req_type=items&sid=${sid}&parent_id=${parentId}`, AuthedGetOptions);
-      if (containersRes.data && !isInvalidSidResponse(containersRes.data)) {
-        setContainers(containersRes.data.containers.container);
-      } else await refreshSesh();
-      if (itemsRes.data && !isInvalidSidResponse(itemsRes.data)) {
-        setItems(itemsRes.data.items.item);
-      } else await refreshSesh();
-    }
-
     if (notAuthed()) return;
     getContainerContents();
   }, [parentId, hostname, sid]);
@@ -154,7 +155,7 @@ export default function DatabaseScreen() {
   }
 
   // downloads the specified file into the user's "Download" folder/album on the device
-  async function downloadFile(objId: string, objTitle: string) {
+  async function downloadFile(objId: string, objTitle: string): Promise<void> {
     // get permission to download the file to the device
     const perm = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     if (perm.status != 'granted') {
@@ -212,7 +213,7 @@ export default function DatabaseScreen() {
 
   // load the properties of the chosen item
   useEffect(() => {
-    async function getItemProperties() {
+    async function getItemProperties(): Promise<void> {
       const res: GetItemPropertiesResponse = await JSONRequest(`${hostname}/content/interface?req_type=edit_load&sid=${sid}&object_id=${chosenItemId}`, AuthedGetOptions);
       if (res.data && !isInvalidSidResponse(res.data)) {
         setChosenItemFullPath(res.data.item.location.value);
@@ -229,12 +230,38 @@ export default function DatabaseScreen() {
     }
 
     if (notAuthed()) return;
+    if (chosenIsContainer || chosenItemId == 0) return;
     getItemProperties();
   }, [chosenItemId]);
 
-  async function editItemProperties() {
-    const res: EditItemPropertiesResponse = await JSONRequest(`${hostname}/content/interface?req_type=edit_save&sid=${sid}&object_id=${chosenItemId}&title=${encodeURIComponent(chosenItemTitle)}&description=${encodeURIComponent(chosenItemDescription)}&mime-type=${chosenItemMimeType}`, AuthedGetOptions);
+  // despite the name this can work with containers also
+  async function editItemProperties(): Promise<void> {
+    const itemOnlyUrlParams = `&description=${encodeURIComponent(chosenItemDescription)}&mime-type=${chosenItemMimeType}`;
+    const baseUrl = `${hostname}/content/interface?req_type=edit_save&sid=${sid}&object_id=${chosenItemId}&title=${encodeURIComponent(chosenItemTitle)}`;
+    const url = chosenIsContainer ? baseUrl : `${baseUrl}${itemOnlyUrlParams}`;
+    const res: EditItemPropertiesResponse = await JSONRequest(url, AuthedGetOptions);
     if (res.data && !isInvalidSidResponse(res.data)) {
+      // if user changed the item/container title, then we refresh the container contents, so the changed title appears
+      // we have to do it this way because filter over a union type in typescript doesn't fly
+      const oldTitle = chosenIsContainer
+        ? containers.filter(x => x.id == chosenItemId)[0].title
+        : items.filter(x => x.id == chosenItemId)[0].title;
+      if (chosenItemTitle != oldTitle) {
+        await getContainerContents();
+      }
+      clearItemProperties();
+      setSnackSuccess(true);
+    } else {
+      setSnackSuccess(false);
+    }
+    setSnackbarVisible(true);
+  }
+
+  async function deleteItem(objId: string): Promise<void> {
+    // all=0 is always included as a param, I just don't mess with it
+    const res: DeleteItemResponse = await JSONRequest(`${hostname}/content/interface?req_type=remove&sid=${sid}&object_id=${objId}&all=0`, AuthedGetOptions);
+    if (res.data && !isInvalidSidResponse(res.data)) {
+      await getContainerContents(); // refresh the container to show new item disappear
       setSnackSuccess(true);
     } else {
       setSnackSuccess(false);
@@ -243,11 +270,24 @@ export default function DatabaseScreen() {
   }
 
   // opens the dialog specified in second arg with info from item (first arg) from an action menu
-  const openDialog = (i: GerberaItem, setDialogVisible: (value: React.SetStateAction<boolean>) => void): void => {
+  const openDialog = (i: GerberaItem | GerberaContainer, setDialogVisible: (value: React.SetStateAction<boolean>) => void): void => {
     setMenuVisible(-1);
     setDialogVisible(true);
     setChosenItemId(i.id);
     setChosenItemTitle(i.title);
+  };
+
+  const clearItemProperties = (): void => {
+    setChosenItemTitle('');
+    setChosenItemId(0);
+    setChosenIsContainer(false);
+    setChosenItemDescription('');
+    setChosenItemFullPath('');
+    setChosenItemMimeType('');
+    setChosenItemBitRate('');
+    setChosenItemDuration('');
+    setChosenItemResolution('');
+    setChosenItemSize('');
   };
 
   return (
@@ -275,11 +315,24 @@ export default function DatabaseScreen() {
                 }
 
                   {/* directories */}
+                  {/* TODO: make openDialog work with containers for edit/properties */}
                   {containers.length > 0
                     && containers.map((c, idx) => (
                       <FolderItem
                         key={idx}
                         title={c.title}
+                        right={() =>
+                          <DbActionMenu
+                            visible={menuVisible == c.id}
+                            onDismiss={() => setMenuVisible(-1)}
+                            onPress={() => setMenuVisible(c.id)}
+                            editAction={() => {
+                              setChosenIsContainer(true); // needed because editing container vs item is different
+                              openDialog(c, setEditDialogVisible);
+                            }}
+                            deleteAction={async () => await deleteItem(c.id.toString())}
+                          />
+                        }
                         onPress={() => {
                           // add the current parentId to the parentIdStack
                           // and make the new parentId this directory's id
@@ -298,24 +351,16 @@ export default function DatabaseScreen() {
                         key={idx}
                         title={i.title}
                         left={() => <ListIcon icon={getIconForFileType(i.title)}/>}
-                        right={() => 
-                          <Menu
+                        right={() =>
+                          <DbActionMenu
                             visible={menuVisible == i.id}
                             onDismiss={() => setMenuVisible(-1)}
-                            anchor={
-                              <TouchableRipple
-                                onPress={() => setMenuVisible(i.id)}
-                              >
-                                <ListIcon icon='dots-vertical'/>
-                              </TouchableRipple>
-                            }
-                          >
-                            <Menu.Item title='Properties' onPress={() => openDialog(i, setPropertiesDialogVisible)}/>
-                            <Menu.Item title='Download' onPress={async () => await downloadFile(i.id.toString(), i.title)}/>
-                            <Menu.Item title='Edit' onPress={() => openDialog(i, setEditDialogVisible)}
-                            />
-                            <Menu.Item title='Delete'/>
-                          </Menu>
+                            onPress={() => setMenuVisible(i.id)}
+                            propertiesAction={() => openDialog(i, setPropertiesDialogVisible)}
+                            downloadAction={async () => await downloadFile(i.id.toString(), i.title)}
+                            editAction={() => openDialog(i, setEditDialogVisible)}
+                            deleteAction={async () => await deleteItem(i.id.toString())}
+                          />
                         }
                       />
                     ))
@@ -327,7 +372,12 @@ export default function DatabaseScreen() {
       </ScrollView>
 
       {/* properties dialog */}
-      <Dialog visible={propertiesDialogVisible} onDismiss={() => setPropertiesDialogVisible(false)}>
+      <Dialog visible={propertiesDialogVisible}
+        onDismiss={() => {
+          clearItemProperties();
+          setPropertiesDialogVisible(false);
+        }}
+      >
         <Dialog.Title>{chosenItemTitle}</Dialog.Title>
         <Dialog.Content>
           <Subheading>File Path</Subheading>
@@ -344,12 +394,24 @@ export default function DatabaseScreen() {
           <Paragraph>{chosenItemSize}</Paragraph>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={() => setPropertiesDialogVisible(false)}>Done</Button>
+          <Button
+            onPress={() => {
+              clearItemProperties();
+              setPropertiesDialogVisible(false);
+            }}
+          >
+            Done
+          </Button>
         </Dialog.Actions>
       </Dialog>
 
       {/* edit item properties dialog */}
-      <Dialog visible={editDialogVisible} onDismiss={() => setEditDialogVisible(false)}>
+      <Dialog visible={editDialogVisible}
+        onDismiss={() => {
+          clearItemProperties();
+          setEditDialogVisible(false);
+        }}
+      >
         <Dialog.Title>{`Edit Item`}</Dialog.Title>
         <Dialog.Content>
           <TextInput
@@ -360,19 +422,23 @@ export default function DatabaseScreen() {
             onChangeText={title => setChosenItemTitle(title)}
             style={main.fullWidth}
           />
-          <TextInput
-            mode='outlined'
-            label='Description'
-            placeholder={chosenItemDescription}
-            value={chosenItemDescription}
-            onChangeText={description => setChosenItemDescription(description)}
-            style={main.fullWidth}
-          />
+          {/* if edititem is being called on a container, then we don't show the description field at all */}
+          {
+            !chosenIsContainer &&
+              <TextInput
+                mode='outlined'
+                label='Description'
+                placeholder={chosenItemDescription}
+                value={chosenItemDescription}
+                onChangeText={description => setChosenItemDescription(description)}
+                style={main.fullWidth}
+              />
+          }
         </Dialog.Content>
         <Dialog.Actions>
           <Button 
             onPress={async () => {
-              await editItemProperties();
+              await editItemProperties(); // clearItemProperties called inside
               setEditDialogVisible(false);
             }}
           >
