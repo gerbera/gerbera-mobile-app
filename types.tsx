@@ -114,10 +114,10 @@ export interface AddFileToDbSuccessResponse {
 }
 
 export interface GerberaContainer {
-  id: number,
-  child_count: number,
-  autoscan_type: string,
-  autoscan_mode: string,
+  id: number
+  child_count: number
+  autoscan_type: string
+  autoscan_mode: string
   title: string
 }
 
@@ -129,6 +129,10 @@ export interface GetContainersSuccessResponse {
     container: GerberaContainer[]
   }
   success: boolean
+}
+
+export function isItem(i: GerberaItem | GerberaContainer): i is GerberaItem {
+  return (i as GerberaItem).res !== undefined;
 }
 
 export interface GerberaItem {

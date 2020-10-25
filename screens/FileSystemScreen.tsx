@@ -3,15 +3,20 @@ import { View } from 'react-native';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
 
-import { ActivityIndicator, Button as LoadingButton, ListIcon, ListItem } from '../components/Themed';
+import { ActivityIndicator, Button as LoadingButton, ListIcon, ListItem, RefreshControl } from '../components/Themed';
 import MenuIcon from '../components/MenuIcon';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import main from '../styles/main';
-import { AddFileToDbResponse, EditAutoscanResponse, GerberaDirectory, GerberaFile, GetAutoscanResponse, GetDirectoriesResponse, GetFilesResponse, isInvalidSidResponse, SessionInfo } from '../types';
+import { AddFileToDbResponse, EditAutoscanResponse, GerberaDirectory, GerberaFile,
+  GetAutoscanResponse, GetDirectoriesResponse, GetFilesResponse, isInvalidSidResponse,
+  SessionInfo
+} from '../types';
 import JSONRequest from '../utils/JSONRequest';
 import { AuthedGetOptions } from '../constants/Options';
 import { ScrollView } from 'react-native';
-import { List, Snackbar, TouchableRipple, Portal, FAB, Dialog, RadioButton, Subheading, TextInput, Button, Checkbox } from 'react-native-paper';
+import { List, Snackbar, TouchableRipple, Portal, FAB, Dialog, RadioButton, Subheading,
+  TextInput, Button, Checkbox
+} from 'react-native-paper';
 import getIconForFileType from '../constants/FileExtIcons';
 import sessionEffect from '../auth/sessionEffect';
 import refreshSession from '../auth/refreshSession';
@@ -42,6 +47,7 @@ export default function FileSystemScreen() {
   const [seconds, setSeconds] = useState('0');
   const [recursive, setRecursive] = useState(false);
   const [inclHidden, setInclHidden] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const notAuthed: () => boolean = () => {
     return hostname == emptySession.hostname && sid == emptySession.sid;
   };
@@ -81,19 +87,18 @@ export default function FileSystemScreen() {
   }, [dirs]);
 
   // ls for current directory
+  async function getDirContents() {
+    const parentId: string = currDir.id;
+    const dirRes: GetDirectoriesResponse = await JSONRequest(`${hostname}/content/interface?req_type=directories&sid=${sid}&parent_id=${parentId}`, AuthedGetOptions);
+    const fileRes: GetFilesResponse = await JSONRequest(`${hostname}/content/interface?req_type=files&sid=${sid}&parent_id=${parentId}`, AuthedGetOptions);
+    if (dirRes.data && !isInvalidSidResponse(dirRes.data)) {
+      setDirs(dirRes.data.containers.container);
+    } else await refreshSesh();
+    if (fileRes.data && !isInvalidSidResponse(fileRes.data)) {
+      setFiles(fileRes.data.files.file);
+    } else await refreshSesh();
+  }
   useEffect(() => {
-    async function getDirContents() {
-      const parentId: string = currDir.id;
-      const dirRes: GetDirectoriesResponse = await JSONRequest(`${hostname}/content/interface?req_type=directories&sid=${sid}&parent_id=${parentId}`, AuthedGetOptions);
-      const fileRes: GetFilesResponse = await JSONRequest(`${hostname}/content/interface?req_type=files&sid=${sid}&parent_id=${parentId}`, AuthedGetOptions);
-      if (dirRes.data && !isInvalidSidResponse(dirRes.data)) {
-        setDirs(dirRes.data.containers.container);
-      } else await refreshSesh();
-      if (fileRes.data && !isInvalidSidResponse(fileRes.data)) {
-        setFiles(fileRes.data.files.file);
-      } else await refreshSesh();
-    }
-
     if (notAuthed()) return;
     getDirContents();
   }, [currDir, hostname, sid]);
@@ -149,9 +154,15 @@ export default function FileSystemScreen() {
       refreshSesh();
   }
 
+  async function onRefresh() {
+    setRefreshing(true);
+    await getDirContents();
+    setRefreshing(false);
+  }
+
   return (
     <View style={main.fullHeight}>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
         { loading
           ? <ActivityIndicator style={main.marginTop}/>
           : <View style={main.flexstart}>

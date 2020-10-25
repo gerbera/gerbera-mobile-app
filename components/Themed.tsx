@@ -1,5 +1,9 @@
 import * as React from 'react';
-import { View as DefaultView } from 'react-native';
+import { 
+  RefreshControlProps,
+  View as DefaultView,
+  RefreshControl as DefaultRefreshControl
+} from 'react-native';
 import {
   Button as PaperButton,
   ActivityIndicator as PaperActivityIndicator,
@@ -75,6 +79,11 @@ export function Paragraph(props: React.ComponentProps<typeof PaperParagraph>) {
       {children}
     </PaperParagraph>
   );
+}
+
+export function RefreshControl(props: RefreshControlProps) {
+  const color = useThemeColor('accent');
+  return <DefaultRefreshControl colors={[color]} {...props} />
 }
 
 // Uses lots of inspo from here: https://humble.dev/creating-a-nice-loading-button-with-react-hooks

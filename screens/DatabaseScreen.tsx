@@ -8,12 +8,15 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
 import Filesize from 'filesize';
 
-import { ActivityIndicator, ListIcon, Paragraph, ListItem } from '../components/Themed';
+import { ActivityIndicator, ListIcon, Paragraph, ListItem, RefreshControl } from '../components/Themed';
 import { Button, Dialog, Snackbar, Subheading, TextInput, TouchableRipple } from 'react-native-paper';
 import MenuIcon from '../components/MenuIcon';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import main from '../styles/main';
-import { DeleteItemResponse, EditItemPropertiesResponse, GerberaContainer, GerberaItem, GetContainersResponse, GetItemPropertiesResponse, GetItemsResponse, isInvalidSidResponse, ResourceData, ScheduledNotifParams, SessionInfo } from '../types';
+import { DeleteItemResponse, EditItemPropertiesResponse, GerberaContainer, GerberaItem,
+  GetContainersResponse, GetItemPropertiesResponse, GetItemsResponse, isInvalidSidResponse,
+  ResourceData, ScheduledNotifParams, SessionInfo, isItem
+} from '../types';
 import sessionEffect from '../auth/sessionEffect';
 import JSONRequest from '../utils/JSONRequest';
 import { AuthedGetOptions } from '../constants/Options';
@@ -49,6 +52,9 @@ export default function DatabaseScreen() {
   const [items, setItems] = useState(noItems);
 
   const [loading, setLoading] = useState(false);
+
+  // refreshControl state vars
+  const [refreshing, setRefreshing] = useState(false);
 
   // menu actions state vars
   const dlPrefix = 'gerbdl_';
@@ -269,8 +275,15 @@ export default function DatabaseScreen() {
     setSnackbarVisible(true);
   }
 
+  async function onRefresh() {
+    setRefreshing(true);
+    await getContainerContents();
+    setRefreshing(false);
+  }
+
   // opens the dialog specified in second arg with info from item (first arg) from an action menu
   const openDialog = (i: GerberaItem | GerberaContainer, setDialogVisible: (value: React.SetStateAction<boolean>) => void): void => {
+    setChosenIsContainer(!isItem(i));
     setChosenItemId(i.id);
     setChosenItemTitle(i.title);
     setMenuVisible(-1);
@@ -294,6 +307,7 @@ export default function DatabaseScreen() {
     // order matters here, we set the menuvisible first so the UI is snappy
     // the other two go later because they trigger fetches to the server
     // which we only run once the user sees the menu open
+    setChosenIsContainer(!isItem(i));
     setMenuVisible(i.id);
     setChosenItemId(i.id);
     setChosenItemTitle(i.title);
@@ -301,7 +315,7 @@ export default function DatabaseScreen() {
 
   return (
     <View style={main.fullHeight}>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
         { loading
           ? <ActivityIndicator style={main.marginTop}/>
           : <View style={main.flexstart}>
@@ -335,10 +349,7 @@ export default function DatabaseScreen() {
                             visible={menuVisible == c.id}
                             onDismiss={() => setMenuVisible(-1)}
                             onPress={() => openMenu(c)}
-                            editAction={() => {
-                              setChosenIsContainer(true); // needed because editing container vs item is different
-                              openDialog(c, setEditDialogVisible);
-                            }}
+                            editAction={() => {openDialog(c, setEditDialogVisible)}}
                             deleteAction={async () => await deleteItem(c.id.toString())}
                           />
                         }
