@@ -26,6 +26,8 @@ export function combineThemes(themeType: ColorSchemeName): ReactNativePaper.Them
     colors: {
       ...NavigationDefaultTheme.colors,
       ...PaperDefaultTheme.colors,
+      primary: '#FF7500',
+      accent: '#FF4D00',
       icon: '#FF7500',
       accenttext: '#2c2d30'
     },
@@ -59,6 +61,7 @@ export function navTheme(themeType: ColorSchemeName): Theme {
     colors: {
       ...NavigationDefaultTheme.colors,
       ...PaperDefaultTheme.colors,
+      primary: '#FF7500',
     },
   };
   const CombinedDarkTheme: Theme = {
