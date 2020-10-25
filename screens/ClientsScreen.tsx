@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ScrollView, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Avatar, Text, Title } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
 import * as SecureStore from 'expo-secure-store';
@@ -42,6 +42,17 @@ function isValidKey(key: string, obj: GerberaClient): key is keyof (GerberaClien
   return key in obj;
 }
 
+function clientInfoExtractor(userAgent: string, profile: string): string {
+  let result = "Unknown";
+  if (profile.includes('UPnP')) result = 'UPnP';
+  if (userAgent.includes('Android')) result = 'Android';
+  if (userAgent.includes('Windows')) result = 'Windows';
+  if (userAgent.includes('BRAVIA')) result = 'Sony Bravia TV';
+  if (profile.includes('TV')) result = 'TV';
+  if (profile.includes('Samsung') && profile.includes('TV')) result = 'Samsung TV';
+  return result;
+}
+
 export default function ClientsScreen() {
   const navigation = useNavigation();
   const noItems: GerberaClient[] = [];
@@ -72,6 +83,8 @@ export default function ClientsScreen() {
         {items.length > 0
           && items.map((item, idx) => (
             <BorderedView key={idx} style={main.thinBorder}>
+              <Avatar.Text size={32} label={clientInfoExtractor(item.userAgent, item.name)[0]} />
+              <Title>{clientInfoExtractor(item.userAgent, item.name)}</Title>
               {Object.keys(item).map(k => {
                 if (isValidKey(k,item)) { // see function above for why we need this typeguard
                   return (
