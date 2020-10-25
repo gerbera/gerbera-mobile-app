@@ -4,27 +4,24 @@ export default {
   prefixes: [Linking.makeUrl('/')],
   config: {
     screens: {
-      Root: {
+      Database: {
         screens: {
-          Database: {
-            screens: {
-              DatabaseScreen: 'database'
-            }
-          },
-          FileSystem: {
-            screens: {
-              FileSystemScreen: 'filesystem'
-            }
-          },
-          Clients: {
-            screens: {
-              ClientsScreen: 'clients'
-            }
-          }
-        },
+          DatabaseScreen: 'database'
+        }
       },
-      NotFound: '*',
-      InputHostname: 'inputhostname'
-    },
+      FileSystem: {
+        screens: {
+          FileSystemScreen: 'filesystem'
+        }
+      },
+      Clients: {
+        screens: {
+          ClientsScreen: 'clients'
+        }
+      },
+      ConnectionSettings: {
+        ConnectionSettingsScreen: 'connectionsettings'
+      }
+    }
   },
 };

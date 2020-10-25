@@ -23,11 +23,11 @@ export default function Navigation({ colorScheme, initialRoute }: { colorScheme:
   const theme = navTheme(colorScheme);
   return (
     <NavigationContainer
-      linking={LinkingConfiguration}
-      // theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      // linking={LinkingConfiguration}
       theme={theme}
     >
-      <RootNavigator initialRoute={initialRoute} />
+      <DrawerNavigator initialRoute={initialRoute} />
+      {/* <RootNavigator initialRoute={initialRoute} /> */}
     </NavigationContainer>
   );
 }

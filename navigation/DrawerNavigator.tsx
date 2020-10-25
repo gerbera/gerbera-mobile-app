@@ -6,14 +6,15 @@ import { Image } from 'react-native';
 import DatabaseScreen from '../screens/DatabaseScreen';
 import FileSystemScreen from '../screens/FileSystemScreen';
 import ClientsScreen from '../screens/ClientsScreen';
-import { DrawerParamList, DatabaseParamList, FileSystemParamList, ClientsParamList } from '../types';
+import { DrawerParamList, DatabaseParamList, FileSystemParamList, ClientsParamList, InitialRoute, ConnectionSettingsParamList } from '../types';
 import main from '../styles/main';
+import InputHostnameScreen from '../screens/InputHostnameScreen';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
-export default function DrawerNavigator() {
+export default function DrawerNavigator({ initialRoute }: { initialRoute: InitialRoute }) {
   return (
-    <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
+    <Drawer.Navigator initialRouteName={initialRoute} drawerContent={(props) => <DrawerContent {...props} />}>
       <Drawer.Screen
         name="Database"
         component={DatabaseNavigator}/>
@@ -24,6 +25,10 @@ export default function DrawerNavigator() {
       <Drawer.Screen
         name="Clients"
         component={ClientsNavigator}
+      />
+      <Drawer.Screen
+        name="Connection Settings"
+        component={ConnectionSettingsNavigator}
       />
     </Drawer.Navigator>
   );
@@ -79,5 +84,18 @@ function ClientsNavigator() {
         component={ClientsScreen}
       />
     </ClientsStack.Navigator>
+  )
+}
+
+const ConnectionSettingsStack = createStackNavigator<ConnectionSettingsParamList>();
+
+function ConnectionSettingsNavigator() {
+  return (
+    <ConnectionSettingsStack.Navigator>
+      <ConnectionSettingsStack.Screen
+        name="Connection Settings"
+        component={InputHostnameScreen}
+      />
+    </ConnectionSettingsStack.Navigator>
   )
 }

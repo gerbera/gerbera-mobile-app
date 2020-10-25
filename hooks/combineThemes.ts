@@ -44,7 +44,8 @@ export function combineThemes(themeType: ColorSchemeName): ReactNativePaper.Them
       surface: '#2F2F2F',
       text: '#FAFAFA',
       accenttext: '#babec6',
-      placeholder: '#E5E5E5',
+      placeholder: '#6b6b6b',
+      // placeholder: '#E5E5E5',
       icon: '#FF7500'
     },
   };

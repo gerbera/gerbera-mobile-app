@@ -3,8 +3,8 @@ import { GestureResponderEvent } from "react-native";
 import { JSONResponse } from "./utils/JSONRequest";
 
 export enum InitialRoute {
-  noHostname = "InputHostname",
-  hostname = "Root"
+  noHostname = "Connection Settings",
+  hostname = "Database"
 }
 
 export type RootStackParamList = {
@@ -25,7 +25,8 @@ export type TabOneParamList = {
 export type DrawerParamList = {
   Database: undefined
   "File System": undefined
-  Clients: undefined  
+  Clients: undefined
+  "Connection Settings": undefined
 }
 
 export type DatabaseParamList = {
@@ -38,6 +39,10 @@ export type FileSystemParamList = {
 
 export type ClientsParamList = {
   Clients: undefined
+}
+
+export type ConnectionSettingsParamList = {
+  "Connection Settings": undefined
 }
 
 export type onPressFunc = (event: GestureResponderEvent) => void

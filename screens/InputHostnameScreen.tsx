@@ -5,9 +5,9 @@ import { GetOptions, SecureStoreOptions } from '../constants/Options';
 import Ids from '../constants/Ids';
 import main from '../styles/main';
 
-import { StackScreenProps } from "@react-navigation/stack";
+import { StackHeaderLeftButtonProps, StackScreenProps } from "@react-navigation/stack";
 import { GetSidResponse, RootStackParamList } from "../types";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import * as Notifications from 'expo-notifications';
 import JSONRequest from '../utils/JSONRequest';
@@ -15,8 +15,11 @@ import { HelperText } from 'react-native-paper';
 import { AndroidImportance, AndroidNotificationVisibility, NotificationChannel, NotificationChannelInput } from 'expo-notifications';
 import useColorScheme from '../hooks/useColorScheme';
 import { combineThemes } from '../hooks/combineThemes';
+import { useNavigation } from '@react-navigation/native';
+import MenuIcon from '../components/MenuIcon';
 
-export default function InputHostnameScreen({ navigation }: StackScreenProps<RootStackParamList, 'InputHostname'>) {
+export default function InputHostnameScreen() {
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [hostname, setHostname] = useState('');
   const [username, setUsername] = useState('');
@@ -24,6 +27,14 @@ export default function InputHostnameScreen({ navigation }: StackScreenProps<Roo
   const [notfound, setNotfound] = useState(false);
   const colorScheme = useColorScheme();
   const theme = combineThemes(colorScheme);
+
+  // adds the hamburger menu icon to the header
+  useEffect(() => {
+    navigation.setOptions({
+      showHeader: true,
+      headerLeft: (props: StackHeaderLeftButtonProps) => (<MenuIcon/>)
+    });
+  });  
 
   async function setNotificationChannel() {
     const loadingChannel: NotificationChannel | null = await Notifications.getNotificationChannelAsync(Ids.loadingChannelId);
@@ -104,6 +115,7 @@ export default function InputHostnameScreen({ navigation }: StackScreenProps<Roo
           value={username}
           onChangeText={username => setUsername(username)}
           style={main.fullWidth}
+          autoCompleteType='username'
         />
         <HelperText type='error' visible={false}>
           username is invalid
@@ -120,6 +132,8 @@ export default function InputHostnameScreen({ navigation }: StackScreenProps<Roo
           value={password}
           onChangeText={password => setPassword(password)}
           style={main.fullWidth}
+          autoCompleteType='password'
+          secureTextEntry={true}
         />
         <HelperText type='error' visible={false}>
           password is invalid
