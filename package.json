@@ -23,7 +23,6 @@
     "expo-constants": "~9.2.0",
     "expo-file-system": "~9.2.0",
     "expo-font": "~8.3.0",
-    "expo-linking": "^1.0.1",
     "expo-media-library": "~9.2.1",
     "expo-notifications": "~0.7.2",
     "expo-permissions": "~9.3.0",

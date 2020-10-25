@@ -5,8 +5,8 @@ import { GetOptions, SecureStoreOptions } from '../constants/Options';
 import Ids from '../constants/Ids';
 import main from '../styles/main';
 
-import { StackHeaderLeftButtonProps, StackScreenProps } from "@react-navigation/stack";
-import { GetSidResponse, RootStackParamList } from "../types";
+import { StackHeaderLeftButtonProps } from "@react-navigation/stack";
+import { GetSidResponse } from "../types";
 import React, { useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import * as Notifications from 'expo-notifications';

@@ -7,21 +7,6 @@ export enum InitialRoute {
   hostname = "Database"
 }
 
-export type RootStackParamList = {
-  Root: undefined
-  NotFound: undefined
-  InputHostname: undefined
-}
-
-export type BottomTabParamList = {
-  TabOne: undefined
-  TabTwo: undefined
-}
-
-export type TabOneParamList = {
-  TabOneScreen: undefined
-}
-
 export type DrawerParamList = {
   Database: undefined
   "File System": undefined

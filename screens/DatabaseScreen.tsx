@@ -271,10 +271,10 @@ export default function DatabaseScreen() {
 
   // opens the dialog specified in second arg with info from item (first arg) from an action menu
   const openDialog = (i: GerberaItem | GerberaContainer, setDialogVisible: (value: React.SetStateAction<boolean>) => void): void => {
-    setMenuVisible(-1);
-    setDialogVisible(true);
     setChosenItemId(i.id);
     setChosenItemTitle(i.title);
+    setMenuVisible(-1);
+    setDialogVisible(true);
   };
 
   const clearItemProperties = (): void => {
@@ -289,6 +289,15 @@ export default function DatabaseScreen() {
     setChosenItemResolution('');
     setChosenItemSize('');
   };
+
+  const openMenu = (i: GerberaItem | GerberaContainer): void => {
+    // order matters here, we set the menuvisible first so the UI is snappy
+    // the other two go later because they trigger fetches to the server
+    // which we only run once the user sees the menu open
+    setMenuVisible(i.id);
+    setChosenItemId(i.id);
+    setChosenItemTitle(i.title);
+  }
 
   return (
     <View style={main.fullHeight}>
@@ -325,7 +334,7 @@ export default function DatabaseScreen() {
                           <DbActionMenu
                             visible={menuVisible == c.id}
                             onDismiss={() => setMenuVisible(-1)}
-                            onPress={() => setMenuVisible(c.id)}
+                            onPress={() => openMenu(c)}
                             editAction={() => {
                               setChosenIsContainer(true); // needed because editing container vs item is different
                               openDialog(c, setEditDialogVisible);
@@ -355,7 +364,7 @@ export default function DatabaseScreen() {
                           <DbActionMenu
                             visible={menuVisible == i.id}
                             onDismiss={() => setMenuVisible(-1)}
-                            onPress={() => setMenuVisible(i.id)}
+                            onPress={() => openMenu(i)}
                             propertiesAction={() => openDialog(i, setPropertiesDialogVisible)}
                             downloadAction={async () => await downloadFile(i.id.toString(), i.title)}
                             editAction={() => openDialog(i, setEditDialogVisible)}
@@ -436,6 +445,14 @@ export default function DatabaseScreen() {
           }
         </Dialog.Content>
         <Dialog.Actions>
+          <Button
+            onPress={() => {
+              clearItemProperties();
+              setEditDialogVisible(false);
+            }}
+          >
+            Cancel
+          </Button>
           <Button 
             onPress={async () => {
               await editItemProperties(); // clearItemProperties called inside
