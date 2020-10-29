@@ -4,13 +4,12 @@
     "slug": "gerbera",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "icon": "./assets/icons/launcher_icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#373737"
     },
     "notification": {
       "icon": "./assets/icons/notification_icon.png",
@@ -30,7 +29,11 @@
       "permissions": [
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
-      ]
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icons/adaptive.png",
+        "backgroundColor": "#373737"
+      }
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

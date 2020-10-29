@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ScrollView, View } from 'react-native';
-import { Avatar, Text, Title } from 'react-native-paper';
+import { Avatar, Subheading, Text, Title } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
 import * as SecureStore from 'expo-secure-store';
@@ -86,7 +86,7 @@ export default function ClientsScreen() {
               <Avatar.Text size={32} label={clientInfoExtractor(item.userAgent, item.name)[0]} />
               <Title>{clientInfoExtractor(item.userAgent, item.name)}</Title>
               {Object.keys(item).map(k => {
-                if (isValidKey(k,item)) { // see function above for why we need this typeguard
+                if (isValidKey(k,item)) { // see isValidKey definition above for why we need this typeguard
                   return (
                     <InfoRow key={`${idx}${k}`} elem={k} value={item[k]}/>
                   );  
@@ -94,6 +94,9 @@ export default function ClientsScreen() {
               })}
             </BorderedView>
           ))
+        }
+        {items.length <= 0
+          && <Subheading style={{marginTop: 50}}>No Clients found</Subheading>
         }
       </View>
     </ScrollView>

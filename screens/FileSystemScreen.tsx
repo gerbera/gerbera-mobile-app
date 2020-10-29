@@ -160,6 +160,15 @@ export default function FileSystemScreen() {
     setRefreshing(false);
   }
 
+  // get the last parentId, remove it from the parentIdStack
+  // and setParentId with the last parentId
+  const goBackADir = () => {
+    setLoading(true);
+    const lastDir = parentDirStack.slice(-1)[0];
+    setParentDirStack(parentDirStack.filter(x => x.id != lastDir.id));
+    setCurrDir(lastDir);
+  }
+
   return (
     <View style={main.fullHeight}>
       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
@@ -172,14 +181,7 @@ export default function FileSystemScreen() {
                 {currDir.id != '0'
                   ? <GoBackItem
                       key={currDir.id}
-                      onPress={() => {
-                        // get the last parentId, remove it from the parentIdStack
-                        // and setParentId with the last parentId
-                        setLoading(true);
-                        const lastDir = parentDirStack.slice(-1)[0];
-                        setParentDirStack(parentDirStack.filter(x => x.id != lastDir.id));
-                        setCurrDir(lastDir);
-                      }}
+                      onPress={goBackADir}
                     />
                   : null
                 }

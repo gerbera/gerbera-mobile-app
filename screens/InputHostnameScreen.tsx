@@ -69,7 +69,7 @@ export default function InputHostnameScreen() {
       if (password != '')
         SecureStore.setItemAsync('password', password, SecureStoreOptions);
       
-      navigation.navigate('Root');
+      navigation.navigate('Database');
     }
 
     if (res.error)
@@ -90,7 +90,7 @@ export default function InputHostnameScreen() {
       <View style={main.inputWrapper}>
         <TextInput
           mode='outlined'
-          label="hostname (required)"
+          label="web interface url (required)"
           placeholder="http://10.0.0.51:49152"
           value={hostname}
           onChangeText={hostname => {
