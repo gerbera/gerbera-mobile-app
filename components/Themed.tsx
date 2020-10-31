@@ -129,3 +129,19 @@ export function Button(props: ButtonProps) {
     </PaperButton>
   );
 }
+
+export function ClientMetadataTitle(props: ButtonProps) {
+  const colorScheme = useColorScheme();
+  const color = useThemeColor('text');
+  const mode = colorScheme == 'dark' ? 'contained' : 'outlined';
+  return (
+    <PaperButton
+      uppercase={false}
+      compact={true}
+      mode={mode}
+      color={color}
+    >
+      {props.children}
+    </PaperButton>
+  );
+}

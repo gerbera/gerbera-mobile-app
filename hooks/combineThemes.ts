@@ -29,7 +29,9 @@ export function combineThemes(themeType: ColorSchemeName): ReactNativePaper.Them
       primary: '#FF7500',
       accent: '#FF4D00',
       icon: '#FF7500',
-      accenttext: '#2c2d30'
+      accenttext: '#2c2d30',
+      placeholder: '#6b6b6b',
+      text: '#0a0a0a'
     },
   };
   const CombinedDarkTheme: ReactNativePaper.Theme = {

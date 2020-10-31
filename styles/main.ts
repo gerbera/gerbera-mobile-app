@@ -42,5 +42,29 @@ export default StyleSheet.create({
   },
   marginTop: {
     marginTop: 35
+  },
+  textAlignCenter: {
+    textAlign: 'center'
+  },
+  inset: {
+    marginHorizontal: 20,
+    marginVertical: 10
+  },
+  clientHeaderAlignment: {
+    marginLeft: 5
+  },
+  clientTitle: {
+    flexDirection: 'row',
+    alignItems: 'flex-end'
+  },
+  shMarginLeft: {
+    marginLeft: 10
+  },
+  bigDivider: {
+    height: 2,
+    marginVertical: 25
+  },
+  clientMetadataSpacing: {
+    marginHorizontal: 5
   }
 });
