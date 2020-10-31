@@ -5,13 +5,16 @@ import { useNavigation } from '@react-navigation/native';
 import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
 import * as SecureStore from 'expo-secure-store';
 
-import { BorderedView, ClientMetadataTitle } from '../components/Themed';
+import { BorderedView, ClientMetadataTitle, RefreshControl } from '../components/Themed';
 import MenuIcon from '../components/MenuIcon';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import main from '../styles/main';
 import JSONRequest from '../utils/JSONRequest';
 import { AuthedGetOptions } from '../constants/Options';
-import { GerberaClient, GetClientsResponse, isInvalidSidResponse } from '../types';
+import sessionEffect from '../auth/sessionEffect';
+import refreshSession from '../auth/refreshSession';
+import { GerberaClient, GetClientsResponse, isInvalidSidResponse, SessionInfo } from '../types';
+import { emptySession, notAuthed } from '../utils/Session';
 
 // whent trying to index into an object with specified keys, with a string
 // of undetermined value, we need to verify that the string of undetermined value
@@ -51,7 +54,8 @@ function cleanUpTitle(title: string): string {
 export default function ClientsScreen() {
   const navigation = useNavigation();
 
-  // auth vars TODO: Add these
+  // auth state vars
+  const [{hostname, sid}, setSession] = useState(emptySession);
 
   // client info vars
   const noItems: GerberaClient[] = [];
@@ -60,7 +64,7 @@ export default function ClientsScreen() {
   const [sections, setSections] = useState(noSections);
 
   // refreshControl vars
-  const [shouldRefresh, setShouldRefresh] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   // constants for rendering items in the screen at bottom of this file
   const horizontalPadding = 40;
@@ -73,22 +77,38 @@ export default function ClientsScreen() {
     });
   });
 
+  // ensures we are in a valid session
+  useLayoutEffect(sessionEffect(setSession), []);
+
+  // refreshes server id, could be abstracted away probably
+  const refreshSesh = async () => {
+    if (notAuthed(hostname, sid)) return;
+    const sesh = await refreshSession(hostname);
+    setSession(sesh);
+  }
+
+  async function fetchData() {
+    const res: GetClientsResponse = await JSONRequest(`${hostname}/content/interface?req_type=clients&sid=${sid}`, AuthedGetOptions);
+    if (res.data && !isInvalidSidResponse(res.data)) {
+      const clientItems = res.data.clients.client;
+      setItems(clientItems);
+      setSections(clientItems.map(x => ({
+        data: [x],
+        key: uuidv4()
+      })));
+    } else await refreshSesh();
+  }
+
   useEffect(() => {
-    async function fetchData() {
-      const hostname = await SecureStore.getItemAsync('hostname');
-      const sid = await SecureStore.getItemAsync('sid');
-      const res: GetClientsResponse = await JSONRequest(`${hostname}/content/interface?req_type=clients&sid=${sid}`, AuthedGetOptions);
-      if (res.data && !isInvalidSidResponse(res.data)) {
-        const clientItems = res.data.clients.client;
-        setItems(clientItems);
-        setSections(clientItems.map(x => ({
-          data: [x],
-          key: uuidv4()
-        })));
-      }
-    }
+    if (notAuthed(hostname, sid)) return;
     fetchData();
-  }, []);
+  }, [hostname, sid]);
+
+  async function onRefresh() {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  }
 
   // used to generate keys for items in the sectionlist and nested flatlist
   function uuidv4() {
@@ -113,6 +133,7 @@ export default function ClientsScreen() {
 
   return (
     <SectionList<GerberaClient>
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
       contentContainerStyle={main.inset}
       ListEmptyComponent={() => (
         <Subheading style={[main.marginTop, main.textAlignCenter]}>No Clients Found</Subheading>
@@ -141,6 +162,7 @@ export default function ClientsScreen() {
           scrollEnabled={false}
           numColumns={3}
           data={GCToFlatListItem(item)}
+          key={`${item.ip}`}
           renderItem={({item}) => {
             const {key, ...data} = item;
             const k = Object.keys(data)[0];
@@ -148,8 +170,6 @@ export default function ClientsScreen() {
             return (
               <View style={[main.clientMetadataSpacing, {width: colWidth}]} key={key}>
                 <ClientMetadataTitle>{cleanUpTitle(k)}</ClientMetadataTitle>
-                {/* <Button uppercase={false} compact={true} mode='contained'>{cleanUpTitle(k)}</Button> */}
-                {/* <Subheading style={{color: '#10101f', backgroundColor: '#e5e5e5', textAlign: 'center', borderWidth: 1, borderColor: '#e5e5e5'}}>{cleanUpTitle(k)}</Subheading> */}
                 <Paragraph>{v}</Paragraph>
               </View>
             );

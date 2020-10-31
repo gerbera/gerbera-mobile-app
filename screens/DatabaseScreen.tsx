@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { View } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { BackHandler, View } from 'react-native';
 import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
 import * as FileSystem from 'expo-file-system';
 import * as Notifications from 'expo-notifications';
@@ -11,7 +11,7 @@ import Filesize from 'filesize';
 import { ActivityIndicator, ListIcon, Paragraph, ListItem, RefreshControl } from '../components/Themed';
 import { Button, Dialog, Snackbar, Subheading, TextInput, TouchableRipple } from 'react-native-paper';
 import MenuIcon from '../components/MenuIcon';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import main from '../styles/main';
 import { DeleteItemResponse, EditItemPropertiesResponse, GerberaContainer, GerberaItem,
   GetContainersResponse, GetItemPropertiesResponse, GetItemsResponse, isInvalidSidResponse,
@@ -29,16 +29,14 @@ import getIconForFileType from '../constants/FileExtIcons';
 import { AndroidNotificationPriority } from 'expo-notifications';
 import Ids from '../constants/Ids';
 import { DbActionMenu } from '../components/ActionMenu';
+import { emptySession, notAuthed } from '../utils/Session';
+import handleBackPress from '../hooks/handleBackPress';
 
 export default function DatabaseScreen() {
   const navigation = useNavigation();
  
   // auth state vars
-  const emptySession: SessionInfo = {hostname: '', sid: ''};
   const [{hostname, sid}, setSession] = useState(emptySession);
-  const notAuthed: () => boolean = () => {
-    return hostname == emptySession.hostname && sid == emptySession.sid;
-  };
 
   // container (directory) state vars
   const emptyParentIdStack: number[] = [];
@@ -94,7 +92,7 @@ export default function DatabaseScreen() {
 
   // refreshes server id, could be abstracted away probably
   const refreshSesh = async () => {
-    if (notAuthed()) return;
+    if (notAuthed(hostname, sid)) return;
     const sesh = await refreshSession(hostname);
     setSession(sesh);
   }
@@ -103,6 +101,20 @@ export default function DatabaseScreen() {
   useEffect(() => {
     setLoading(false);
   }, [containers]);
+
+  // pop the parentIdStack and take the result and make it the new parentId
+  const goBackADir = () => {
+    setLoading(true);
+    const lastParentId = parentIdStack.slice(-1)[0];
+    setParentIdStack(parentIdStack.filter(x => x != lastParentId));
+    setParentId(lastParentId);
+  }
+
+  // catches back button behavior and goes back a dir
+  // iff parentId != 0
+  useFocusEffect(
+    useCallback(handleBackPress(parentId != 0, goBackADir), [parentId])
+  );
 
   // ls the container we are currently in (container is db version of dir)
   async function getContainerContents(): Promise<void> {
@@ -116,7 +128,7 @@ export default function DatabaseScreen() {
     } else await refreshSesh();
   }
   useEffect(() => {
-    if (notAuthed()) return;
+    if (notAuthed(hostname, sid)) return;
     getContainerContents();
   }, [parentId, hostname, sid]);
 
@@ -235,7 +247,7 @@ export default function DatabaseScreen() {
       }
     }
 
-    if (notAuthed()) return;
+    if (notAuthed(hostname, sid)) return;
     if (chosenIsContainer || chosenItemId == 0) return;
     getItemProperties();
   }, [chosenItemId]);

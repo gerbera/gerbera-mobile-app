@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
 
 import { ActivityIndicator, Button as LoadingButton, ListIcon, ListItem, RefreshControl } from '../components/Themed';
 import MenuIcon from '../components/MenuIcon';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import main from '../styles/main';
 import { AddFileToDbResponse, EditAutoscanResponse, GerberaDirectory, GerberaFile,
   GetAutoscanResponse, GetDirectoriesResponse, GetFilesResponse, isInvalidSidResponse,
@@ -22,12 +22,17 @@ import sessionEffect from '../auth/sessionEffect';
 import refreshSession from '../auth/refreshSession';
 import GoBackItem from '../components/GoBackItem';
 import FolderItem from '../components/FolderItem';
+import { emptySession, notAuthed } from '../utils/Session';
+import handleBackPress from '../hooks/handleBackPress';
 
 export default function FileSystemScreen() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const emptySession: SessionInfo = {hostname: '', sid: ''};
+
+  // auth state vars
   const [{hostname, sid}, setSession] = useState(emptySession);
+
+  // directory/file  state vars
   const emptyParentDirStack: GerberaDirectory[] = [];
   const [parentDirStack, setParentDirStack] = useState(emptyParentDirStack);
   const rootDir: GerberaDirectory = {id: '0', child_count: false, title: ''};
@@ -37,7 +42,12 @@ export default function FileSystemScreen() {
   const [dirs, setDirs] = useState(noDirs);
   const noFiles: GerberaFile[] = [];
   const [files, setFiles] = useState(noFiles);
+ 
+  // refreshcontrol / loading vars
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // fab state vars
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const snackbarDuration = 4000;
   const [fileToAddId, setFileToAddId] = useState('0');
@@ -47,10 +57,6 @@ export default function FileSystemScreen() {
   const [seconds, setSeconds] = useState('0');
   const [recursive, setRecursive] = useState(false);
   const [inclHidden, setInclHidden] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const notAuthed: () => boolean = () => {
-    return hostname == emptySession.hostname && sid == emptySession.sid;
-  };
   
   useEffect(() => {
     navigation.setOptions({
@@ -64,7 +70,7 @@ export default function FileSystemScreen() {
 
   // refreshes server id, could be abstracted away probably
   const refreshSesh = async () => {
-    if (notAuthed()) return;
+    if (notAuthed(hostname, sid)) return;
     const sesh = await refreshSession(hostname);
     setSession(sesh);
   }
@@ -86,6 +92,20 @@ export default function FileSystemScreen() {
     setLoading(false);
   }, [dirs]);
 
+  // get the last parentId, remove it from the parentIdStack
+  // and setParentId with the last parentId
+  const goBackADir = () => {
+    setLoading(true);
+    const lastDir = parentDirStack.slice(-1)[0];
+    setParentDirStack(parentDirStack.filter(x => x.id != lastDir.id));
+    setCurrDir(lastDir);
+  }
+
+  // intercepts back button press and goes back a dir iff currDir.id != '0'
+  useFocusEffect(
+    useCallback(handleBackPress(currDir.id != '0', goBackADir), [currDir])
+  );
+
   // ls for current directory
   async function getDirContents() {
     const parentId: string = currDir.id;
@@ -99,7 +119,7 @@ export default function FileSystemScreen() {
     } else await refreshSesh();
   }
   useEffect(() => {
-    if (notAuthed()) return;
+    if (notAuthed(hostname, sid)) return;
     getDirContents();
   }, [currDir, hostname, sid]);
 
@@ -125,14 +145,14 @@ export default function FileSystemScreen() {
       } else await refreshSesh();
     }
 
-    if (notAuthed()) return;
+    if (notAuthed(hostname, sid)) return;
     if (fileToAddId == '0') return;
     addToDb(fileToAddId);
   }, [fileToAddId, hostname, sid]);
 
   // edits / adds the autoscan info for the current directory
   async function loadAutoscanInfo(id: string) {
-    if (notAuthed()) return;
+    if (notAuthed(hostname, sid)) return;
     const res: GetAutoscanResponse = await JSONRequest(`${hostname}/content/interface?req_type=autoscan&action=as_edit_load&sid=${sid}&object_id=${id}&from_fs=true`, AuthedGetOptions);
     if (res.data && !isInvalidSidResponse(res.data)) {
       setAutoscanMode(res.data.autoscan.scan_mode);
@@ -143,7 +163,7 @@ export default function FileSystemScreen() {
   }
 
   async function postAutoscanInfo(id: string) {
-    if (notAuthed()) return;
+    if (notAuthed(hostname, sid)) return;
 
     // recursive and inclHidden are sent as URL param values (1 for true, 0 for false)
     const recursiveBit = recursive ? '1' : '0';
@@ -158,15 +178,6 @@ export default function FileSystemScreen() {
     setRefreshing(true);
     await getDirContents();
     setRefreshing(false);
-  }
-
-  // get the last parentId, remove it from the parentIdStack
-  // and setParentId with the last parentId
-  const goBackADir = () => {
-    setLoading(true);
-    const lastDir = parentDirStack.slice(-1)[0];
-    setParentDirStack(parentDirStack.filter(x => x.id != lastDir.id));
-    setCurrDir(lastDir);
   }
 
   return (
