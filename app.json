@@ -22,9 +22,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gerbera.gerbera",
+      "buildNumber": "1.0.0"
     },
     "android": {
+      "package": "com.gerbera.gerbera",
+      "versionCode": 1,
       "useNextNotificationsApi": true,
       "permissions": [
         "READ_EXTERNAL_STORAGE",
