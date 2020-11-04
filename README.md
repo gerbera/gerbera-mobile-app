@@ -41,7 +41,7 @@ I use [**Shields IO**](https://shields.io/) for making badges. It is a simple an
 
 ![Tweet](https://img.shields.io/twitter/url?style=flat-square&logo=twitter&url=https%3A%2F%2Fnavendu.me%2Fnsfw-filter%2Findex.html): This is not essential but it is a cool way to let others know about your project! Clicking this button automatically opens twitter and writes a tweet about your project and link to it. All the user has to do is to click tweet. Isn't that neat? -->
 
-This is the mobile app interface for the [Gerbera] UPnP media server. It's built with React Native, using Expo, so it can function both on Android and iOS.
+This is the mobile app interface for the [Gerbera](https://github.com/gerbera/gerbera) UPnP media server. It's built with React Native, using Expo, so it can function both on Android and iOS.
 
 Downloads are available here: [APK](https://storage.googleapis.com/gh-assets/gerbera-861b92c363074151a2b8b524acc811bf-signed.apk)
 
@@ -72,7 +72,7 @@ cd gerbera-mobile-app
 Install dependencies
 (you can use `npm` to install dependencies if you prefer)
 ```
-npm install -g expo-cli
+yarn global add expo-cli
 yarn install
 ```
 
