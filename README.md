@@ -16,7 +16,7 @@ The best dimensions for the banner is **1280x650px**. You could also use this fo
 
 I personally use [**Canva**](https://www.canva.com/) for creating the banner images. All the basic stuff is **free**(*you won't need the pro version in most cases*).
 
-There are endless badges that you could use in your projects. And they do depend on the project. Some of the ones that I commonly use in every projects are given below. 
+There are endless badges that you could use in your projects. And they do depend on the project. Some of the ones that I commonly use in every projects are given below.
 
 I use [**Shields IO**](https://shields.io/) for making badges. It is a simple and easy to use tool that you can use for almost all your badge cravings. -->
 
@@ -59,13 +59,13 @@ Downloads are available here: [APK](https://storage.googleapis.com/gh-assets/ger
 
 # Screenshots
 
-[!screenshot](https://storage.googleapis.com/gh-assets/gerb1.png)
-[!screenshot](https://storage.googleapis.com/gh-assets/gerb2.png)
-[!screenshot](https://storage.googleapis.com/gh-assets/gerb3.png)
-[!screenshot](https://storage.googleapis.com/gh-assets/gerb4.png)
-[!screenshot](https://storage.googleapis.com/gh-assets/gerb5.png)
-[!screenshot](https://storage.googleapis.com/gh-assets/gerb6.png)
-[!screenshot](https://storage.googleapis.com/gh-assets/gerb7.png)
+![screenshot1](https://storage.googleapis.com/gh-assets/gerb1.png)
+![screenshot2](https://storage.googleapis.com/gh-assets/gerb2.png)
+![screenshot3](https://storage.googleapis.com/gh-assets/gerb3.png)
+![screenshot4](https://storage.googleapis.com/gh-assets/gerb4.png)
+![screenshot5](https://storage.googleapis.com/gh-assets/gerb5.png)
+![screenshot6](https://storage.googleapis.com/gh-assets/gerb6.png)
+![screenshot7](https://storage.googleapis.com/gh-assets/gerb7.png)
 
 # Build
 [(Back to top)](#table-of-contents)
