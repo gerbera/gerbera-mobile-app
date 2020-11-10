@@ -52,10 +52,20 @@ Downloads are available here: [APK](https://storage.googleapis.com/gh-assets/ger
 # Table of contents
 
 - [Table of contents](#table-of-contents)
+- [Screenshots](#screenshots)
 - [Build](#build)
 - [Features](#features)
 - [Limitations](#limitations)
 
+# Screenshots
+
+[!screenshot](https://storage.googleapis.com/gh-assets/gerb1.png)
+[!screenshot](https://storage.googleapis.com/gh-assets/gerb2.png)
+[!screenshot](https://storage.googleapis.com/gh-assets/gerb3.png)
+[!screenshot](https://storage.googleapis.com/gh-assets/gerb4.png)
+[!screenshot](https://storage.googleapis.com/gh-assets/gerb5.png)
+[!screenshot](https://storage.googleapis.com/gh-assets/gerb6.png)
+[!screenshot](https://storage.googleapis.com/gh-assets/gerb7.png)
 
 # Build
 [(Back to top)](#table-of-contents)
