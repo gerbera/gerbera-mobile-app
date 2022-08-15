@@ -4123,10 +4123,17 @@ expo-secure-store@~9.2.0:
   resolved "https://registry.yarnpkg.com/expo-secure-store/-/expo-secure-store-9.2.0.tgz#5c7072058f9d0dd80dd9f17732a8512a2a30c52c"
   integrity sha512-CtoMeuw/BzmLZMxmw30YiAZY51bpuOsBQpt3CrvLqpT2Q4/M18Tc1H4qXzHER3GPfZeG2nEJQkEgHsHXrIhPXg==
 
-expo-splash-screen@^0.6.1, expo-splash-screen@~0.6.2:
+expo-splash-screen@^0.6.1:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.6.2.tgz#2be7fc28ad62549e870c69f1fe133ebe756c524f"
   integrity sha512-Rvi+aiVDztFyLh5fYJYcZxVuQNDCy6ATSTfxuch5uVQ1jA9/vjVzUKG4iZCoChaSCnMV56aFftHBWSDNWPvLFQ==
+  dependencies:
+    "@expo/configure-splash-screen" "0.2.0"
+
+expo-splash-screen@~0.7.0:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.7.1.tgz#5c7db5718f64db33528e5bf3a0d712d46d3f08a5"
+  integrity sha512-pKFv7AU6QefvVOln/w9d+UnV/fil3DnRR+UI/orbUBOc6LnawV/Pk4tLeAn/Ex9J28cU2tYB5SQbgrC0Ch9VFg==
   dependencies:
     "@expo/configure-splash-screen" "0.2.0"
 
