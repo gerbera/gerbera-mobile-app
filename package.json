@@ -16,7 +16,7 @@
     "@react-navigation/drawer": "^5.10.2",
     "@react-navigation/native": "^5.8.2",
     "@react-navigation/stack": "^5.11.1",
-    "expo": "~39.0.2",
+    "expo": "~41.0.0",
     "expo-asset": "~8.2.0",
     "expo-file-system": "~9.2.0",
     "expo-font": "~8.3.0",
@@ -29,13 +29,13 @@
     "filesize": "^6.1.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "0.69.0",
+    "react-native": "0.70.0",
     "react-native-gesture-handler": "~1.7.0",
     "react-native-paper": "^4.3.0",
     "react-native-reanimated": "~1.13.0",
     "react-native-safe-area-context": "3.1.8",
     "react-native-screens": "~2.10.1",
-    "react-native-web": "~0.14.4"
+    "react-native-web": "~0.15.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
