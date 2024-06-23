@@ -17,7 +17,7 @@
     "@react-navigation/native": "^5.8.2",
     "@react-navigation/stack": "^5.11.1",
     "expo": "~39.0.2",
-    "expo-asset": "~8.2.0",
+    "expo-asset": "~8.14.0",
     "expo-file-system": "~9.2.0",
     "expo-font": "~8.3.0",
     "expo-media-library": "~9.2.1",
