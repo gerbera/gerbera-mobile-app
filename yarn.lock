@@ -5304,10 +5304,10 @@ expo-media-library@~9.2.1:
   resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-9.2.1.tgz#11583e40087d77cf16e70bb7db0048d2bd1938b5"
   integrity sha512-A9AAGI1200P0oULoXA7U7wQ91zgPWl9GWo5H9EQvVDHp1ABX8tf2qTOad6Y0KotHYWVMIyfsVXzVYAbjJ9LxPQ==
 
-expo-notifications@~0.28.16:
-  version "0.28.17"
-  resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.28.17.tgz#e9cb4edb3159b4cd8504df27e9dfbe6e9d22ea89"
-  integrity sha512-tuhc/X385O1gLSBEsPpXSqmmBK6Ve6zG8u6YFa1kXILbyy83DHJuHB5ELJKo/HZdstlYeFjkDCei4haOuxCLCQ==
+expo-notifications@~0.28.18:
+  version "0.28.19"
+  resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.28.19.tgz#d8f858b887aacfc8ac5e0a59b00a9c88ded54469"
+  integrity sha512-rKKTnVQQ9XNQyTNwKmI9OlchhVu0XOZfRpImMqPFCJg6IwECM1izdas2SLCbE/GApg2Tw3U5R2fd26OnCtUU/w==
   dependencies:
     "@expo/image-utils" "^0.5.0"
     "@ide/backoff" "^1.0.0"
