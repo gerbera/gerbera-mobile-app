@@ -29,7 +29,7 @@
     "filesize": "^6.4.0",
     "react": "16.14.0",
     "react-dom": "16.14.0",
-    "react-native": "0.75.3",
+    "react-native": "0.75.4",
     "react-native-gesture-handler": "~1.10.3",
     "react-native-paper": "^4.12.8",
     "react-native-reanimated": "~2.10.0",
