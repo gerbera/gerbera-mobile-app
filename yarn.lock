@@ -2564,6 +2564,17 @@
     dotenv-expand "~11.0.6"
     getenv "^1.0.0"
 
+"@expo/env@~0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@expo/env/-/env-0.4.2.tgz#911709933e6fc1b45b3d2efdb10ca2c52fac7e91"
+  integrity sha512-TgbCgvSk0Kq0e2fLoqHwEBL4M0ztFjnBEz0YCDm5boc1nvkV1VMuIMteVdeBwnTh8Z0oPJTwHCD49vhMEt1I6A==
+  dependencies:
+    chalk "^4.0.0"
+    debug "^4.3.4"
+    dotenv "~16.4.5"
+    dotenv-expand "~11.0.6"
+    getenv "^1.0.0"
+
 "@expo/fingerprint@0.11.9":
   version "0.11.9"
   resolved "https://registry.yarnpkg.com/@expo/fingerprint/-/fingerprint-0.11.9.tgz#50e9752d916fe04e5712db3237b9883801b7a7ca"
@@ -5963,6 +5974,14 @@ expo-constants@~17.0.5:
     "@expo/config" "~10.0.8"
     "@expo/env" "~0.4.1"
 
+expo-constants@~17.0.8:
+  version "17.0.8"
+  resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-17.0.8.tgz#d7a21ec6f1f4834ea25aa645be20292ef99c0b81"
+  integrity sha512-XfWRyQAf1yUNgWZ1TnE8pFBMqGmFP5Gb+SFSgszxDdOoheB/NI5D4p7q86kI2fvGyfTrxAe+D+74nZkfsGvUlg==
+  dependencies:
+    "@expo/config" "~10.0.11"
+    "@expo/env" "~0.4.2"
+
 expo-file-system@~18.0.10:
   version "18.0.10"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-18.0.10.tgz#b4b99d0e76f960b46ef1f39bcd0355c05fabf7bc"
@@ -6023,18 +6042,18 @@ expo-modules-core@2.2.1:
   dependencies:
     invariant "^2.2.4"
 
-expo-notifications@~0.29.12:
-  version "0.29.13"
-  resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.29.13.tgz#6141dc8c96ace8507003cbd7d3c35b6e201b1b0c"
-  integrity sha512-GHye6XeI1uEeVttJO/hGwUyA5cgQsxR3mi5q37yOE7cZN3cMj36pIfEEmjXEr0nWIWSzoJ0w8c2QxNj5xfP1pA==
+expo-notifications@~0.29.14:
+  version "0.29.14"
+  resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.29.14.tgz#77beb6bc74b1b1abfa3adcab77fb6c9ea5d7d1b0"
+  integrity sha512-AVduNx9mKOgcAqBfrXS1OHC9VAQZrDQLbVbcorMjPDGXW7m0Q5Q+BG6FYM/saVviF2eO8fhQRsTT40yYv5/bhQ==
   dependencies:
-    "@expo/image-utils" "^0.6.4"
+    "@expo/image-utils" "^0.6.5"
     "@ide/backoff" "^1.0.0"
     abort-controller "^3.0.0"
     assert "^2.0.0"
     badgin "^1.1.5"
     expo-application "~6.0.2"
-    expo-constants "~17.0.5"
+    expo-constants "~17.0.8"
 
 expo-permissions@~9.3.0:
   version "9.3.0"
