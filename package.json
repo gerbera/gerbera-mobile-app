@@ -21,7 +21,7 @@
     "expo-file-system": "~9.2.0",
     "expo-font": "~8.4.0",
     "expo-media-library": "~9.2.1",
-    "expo-notifications": "~0.31.1",
+    "expo-notifications": "~0.31.3",
     "expo-permissions": "~9.3.0",
     "expo-secure-store": "~9.3.0",
     "expo-splash-screen": "~0.30.5",
