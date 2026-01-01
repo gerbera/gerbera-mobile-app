@@ -24,7 +24,7 @@
     "expo-notifications": "~0.32.10",
     "expo-permissions": "~9.3.0",
     "expo-secure-store": "~9.3.0",
-    "expo-splash-screen": "~31.0.0",
+    "expo-splash-screen": "~31.0.12",
     "expo-status-bar": "~1.12.1",
     "filesize": "^6.4.0",
     "react": "16.14.0",
